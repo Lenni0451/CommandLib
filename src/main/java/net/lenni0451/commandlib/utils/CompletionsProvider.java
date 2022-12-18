@@ -6,6 +6,6 @@ import java.util.List;
 
 public interface CompletionsProvider<E> {
 
-    void provide(final List<String> completions, final StringReader stringReader, final ExecutionContext<E> context);
+    void provide(final List<String> completions, final ExecutionContext<E> context, final StringReader stringReader);
 
 }

@@ -1,17 +1,25 @@
 package net.lenni0451.commandlib;
 
+import net.lenni0451.commandlib.utils.ArgumentComparator;
+
 import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.Map;
 
 public class ExecutionContext<E> {
 
+    private final ArgumentComparator argumentComparator;
     private final E executor;
     private final Map<String, Object> arguments;
 
-    public ExecutionContext(final E executor) {
+    public ExecutionContext(final ArgumentComparator argumentComparator, final E executor) {
+        this.argumentComparator = argumentComparator;
         this.executor = executor;
         this.arguments = new HashMap<>();
+    }
+
+    public ArgumentComparator getArgumentComparator() {
+        return this.argumentComparator;
     }
 
     public E getExecutor() {

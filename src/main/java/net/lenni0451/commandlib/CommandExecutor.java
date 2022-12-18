@@ -3,6 +3,7 @@ package net.lenni0451.commandlib;
 import net.lenni0451.commandlib.exceptions.ChainExecutionException;
 import net.lenni0451.commandlib.exceptions.CommandNotFoundException;
 import net.lenni0451.commandlib.nodes.StringArgumentNode;
+import net.lenni0451.commandlib.utils.ArgumentComparator;
 import net.lenni0451.commandlib.utils.StringReader;
 
 import java.util.HashMap;
@@ -12,14 +13,20 @@ import java.util.Set;
 
 public class CommandExecutor<E> {
 
+    private final ArgumentComparator argumentComparator;
     private final Map<StringArgumentNode<E>, List<ArgumentChain<E>>> chains;
 
     public CommandExecutor() {
+        this(ArgumentComparator.CASE_INSENSITIVE);
+    }
+
+    public CommandExecutor(final ArgumentComparator argumentComparator) {
+        this.argumentComparator = argumentComparator;
         this.chains = new HashMap<>();
     }
 
     public void register(final StringArgumentNode<E> stringArgumentNode) {
-        this.chains.entrySet().removeIf(entry -> entry.getKey().name().equalsIgnoreCase(stringArgumentNode.name()));
+        this.chains.entrySet().removeIf(entry -> this.argumentComparator.compare(entry.getKey().name(), stringArgumentNode.name()));
         this.chains.put(stringArgumentNode, ArgumentChain.buildChains(stringArgumentNode));
     }
 
@@ -33,7 +40,7 @@ public class CommandExecutor<E> {
     }
 
     public <T> T execute(final E executor, final StringReader reader) throws CommandNotFoundException {
-        ExecutionContext<E> context = new ExecutionContext<>(executor);
+        ExecutionContext<E> context = new ExecutionContext<>(this.argumentComparator, executor);
         Map<ArgumentChain<E>, List<Object>> matchingChains = this.findMatchingChains(context, reader);
         return this.executeChain(matchingChains, context, reader);
     }

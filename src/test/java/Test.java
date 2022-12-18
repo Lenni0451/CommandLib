@@ -1,6 +1,7 @@
 import net.lenni0451.commandlib.CommandExecutor;
 import net.lenni0451.commandlib.exceptions.CommandNotFoundException;
 import net.lenni0451.commandlib.nodes.StringArgumentNode;
+import net.lenni0451.commandlib.utils.ArgumentComparator;
 
 public class Test {
 
@@ -50,9 +51,23 @@ literal("test").arg("lul", new PlayerArgType()).executes(ctx -> {
             System.out.println("4");
         })));
 
-        CommandExecutor<Runtime> executor = new CommandExecutor<>();
+        CommandExecutor<Runtime> executor = new CommandExecutor<>(ArgumentComparator.CASE_SENSITIVE);
         executor.register(node);
-        executor.execute(Runtime.getRuntime(), "test lul3 lul");
+        tryExecute(executor, "test");
+        tryExecute(executor, "test fail");
+        tryExecute(executor, "test lul fail again");
+        tryExecute(executor, "test lul");
+        tryExecute(executor, "test lul2");
+        tryExecute(executor, "test lul3");
+        tryExecute(executor, "test lul3 lul4");
+    }
+
+    private static void tryExecute(final CommandExecutor<Runtime> executor, final String command) {
+        try {
+            executor.execute(Runtime.getRuntime(), command);
+        } catch (Throwable t) {
+            System.out.println("error: " + command);
+        }
     }
 
     private static StringArgumentNode<Runtime> literal(final String literal) {

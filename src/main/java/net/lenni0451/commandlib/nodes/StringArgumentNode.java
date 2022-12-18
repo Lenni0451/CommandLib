@@ -23,14 +23,14 @@ public class StringArgumentNode<E> extends ArgumentNode<E, String> {
 
     @Nonnull
     @Override
-    public String parse(ExecutionContext<E> context, StringReader reader) throws ArgumentParseException {
+    protected String parseValue(ExecutionContext<E> context, StringReader reader) throws ArgumentParseException {
         String result = reader.readWordOrString();
-        if (result.equalsIgnoreCase(this.name())) return this.name();
+        if (context.getArgumentComparator().compare(result, this.name())) return this.name();
         throw new ArgumentParseException(this.name());
     }
 
     @Override
-    public void parseCompletions(List<String> completions, StringReader stringReader, ExecutionContext<E> context) {
+    public void parseCompletions(List<String> completions, ExecutionContext<E> context, StringReader stringReader) {
         completions.add(this.name());
     }
 
