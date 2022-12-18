@@ -1,6 +1,5 @@
 package net.lenni0451.commandlib.utils;
 
-import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.regex.Pattern;
 
@@ -13,7 +12,7 @@ public class StringReader {
     private final String string;
     private int cursor = 0;
 
-    public StringReader(@Nonnull final String string) {
+    public StringReader(final String string) {
         this.string = string;
     }
 
