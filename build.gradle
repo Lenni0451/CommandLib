@@ -10,6 +10,14 @@ archivesBaseName = project.maven_name
 group = project.maven_group
 version = project.maven_version
 
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation "com.google.code.findbugs:jsr305:3.0.2"
+}
+
 java {
     withSourcesJar()
     withJavadocJar()
