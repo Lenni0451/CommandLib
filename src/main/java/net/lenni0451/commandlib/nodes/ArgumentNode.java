@@ -5,6 +5,7 @@ import net.lenni0451.commandlib.exceptions.ArgumentParseException;
 import net.lenni0451.commandlib.utils.CompletionsProvider;
 import net.lenni0451.commandlib.utils.StringReader;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
@@ -64,6 +65,7 @@ public abstract class ArgumentNode<E, T> {
         return this.executor;
     }
 
+    @Nonnull
     public abstract T parse(final ExecutionContext<E> context, final StringReader stringReader) throws ArgumentParseException;
 
     public abstract void parseCompletions(final List<String> completions, final StringReader stringReader, final ExecutionContext<E> context);

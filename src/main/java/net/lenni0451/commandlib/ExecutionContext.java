@@ -1,6 +1,6 @@
 package net.lenni0451.commandlib;
 
-import javax.annotation.Nullable;
+import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,7 +22,7 @@ public class ExecutionContext<E> {
         return this.arguments;
     }
 
-    @Nullable
+    @Nonnull
     public <T> T getArgument(final String name) {
         if (!this.arguments.containsKey(name)) throw new IllegalArgumentException("The argument '" + name + "' does not exist");
         return (T) this.arguments.get(name);
