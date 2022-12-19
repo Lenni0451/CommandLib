@@ -87,6 +87,8 @@ public class ArgumentChain<E> {
                 if (!isLast && !reader.canRead()) throw new ChainExecutionException(ChainExecutionException.Reason.NO_ARGUMENTS_LEFT);
             } catch (ArgumentParseException e) {
                 throw new ChainExecutionException(e);
+            } catch (RuntimeException e) {
+                throw new ChainExecutionException(e);
             }
         }
         return out;

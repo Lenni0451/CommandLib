@@ -25,7 +25,7 @@ public class StringArgumentNode<E> extends ArgumentNode<E, String> {
 
     @Nonnull
     @Override
-    public String parseValue(ExecutionContext<E> context, StringReader reader) throws ArgumentParseException {
+    public String parseValue(ExecutionContext<E> context, StringReader reader) throws ArgumentParseException, RuntimeException {
         String result = reader.readWordOrString();
         if (context.getArgumentComparator().compare(result, this.name())) return this.name();
         throw new ArgumentParseException(this.name());

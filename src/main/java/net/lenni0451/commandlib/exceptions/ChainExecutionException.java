@@ -9,6 +9,11 @@ public class ChainExecutionException extends Exception {
         this.reason = Reason.ARGUMENT_PARSE_EXCEPTION;
     }
 
+    public ChainExecutionException(final RuntimeException e) {
+        super(e);
+        this.reason = Reason.RUNTIME_EXCEPTION;
+    }
+
     public ChainExecutionException(final Reason reason) {
         this.reason = reason;
     }
@@ -19,7 +24,7 @@ public class ChainExecutionException extends Exception {
 
 
     public enum Reason {
-        ARGUMENT_PARSE_EXCEPTION, NO_ARGUMENTS_LEFT
+        ARGUMENT_PARSE_EXCEPTION, RUNTIME_EXCEPTION, NO_ARGUMENTS_LEFT
     }
 
 }

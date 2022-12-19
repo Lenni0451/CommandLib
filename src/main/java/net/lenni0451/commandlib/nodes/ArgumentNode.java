@@ -72,7 +72,7 @@ public abstract class ArgumentNode<E, T> {
     }
 
     @Nonnull
-    public abstract T parseValue(final ExecutionContext<E> context, final StringReader stringReader) throws ArgumentParseException;
+    public abstract T parseValue(final ExecutionContext<E> context, final StringReader stringReader) throws ArgumentParseException, RuntimeException;
 
     public abstract void parseCompletions(final List<String> completions, final ExecutionContext<E> context, final StringReader stringReader);
 
