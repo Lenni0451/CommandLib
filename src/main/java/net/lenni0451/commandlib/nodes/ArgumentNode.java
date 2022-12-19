@@ -19,8 +19,7 @@ public abstract class ArgumentNode<E, T> {
     private final String description;
     private final List<ArgumentNode<E, ?>> children;
     protected int weight = 0;
-    private CompletionsProvider<E> optionalCompletionsProvider;
-    private CompletionsProvider<E> enforcedCompletionsProvider;
+    private CompletionsProvider<E> completionsProvider;
     private Function<ExecutionContext<E>, ?> executor;
 
     public ArgumentNode(final String name) {
@@ -51,13 +50,8 @@ public abstract class ArgumentNode<E, T> {
     }
 
     @Nullable
-    public CompletionsProvider<E> optionalCompletionsProvider() {
-        return this.optionalCompletionsProvider;
-    }
-
-    @Nullable
-    public CompletionsProvider<E> enforcedCompletionsProvider() {
-        return this.enforcedCompletionsProvider;
+    public CompletionsProvider<E> completionsProvider() {
+        return this.completionsProvider;
     }
 
     @Nullable
@@ -67,31 +61,13 @@ public abstract class ArgumentNode<E, T> {
 
     public List<String> completions(final ExecutionContext<E> context, final StringReader reader) {
         List<String> completions = new ArrayList<>();
-        if (this.enforcedCompletionsProvider != null) this.enforcedCompletionsProvider.provide(completions, context, reader);
-        else if (this.optionalCompletionsProvider != null) this.optionalCompletionsProvider.provide(completions, context, reader);
+        if (this.completionsProvider != null) this.completionsProvider.provide(completions, context, reader);
         else this.parseCompletions(completions, context, reader);
         return completions;
     }
 
     @Nonnull
-    public T parse(final ExecutionContext<E> context, final StringReader reader) throws ArgumentParseException {
-        int cursor = reader.getCursor();
-        T parsed = this.parseValue(context, reader);
-        String read = reader.getString().substring(cursor, reader.getCursor()).trim();
-        if (this.enforcedCompletionsProvider != null) {
-            List<String> completions = new ArrayList<>();
-            this.enforcedCompletionsProvider.provide(completions, context, reader);
-            if (!context.getArgumentComparator().compare(read, completions)) throw new ArgumentParseException("Invalid value");
-        } else if (this.optionalCompletionsProvider == null) {
-            List<String> completions = new ArrayList<>();
-            this.parseCompletions(completions, context, reader);
-            if (!context.getArgumentComparator().compare(read, completions)) throw new ArgumentParseException("Invalid value");
-        }
-        return parsed;
-    }
-
-    @Nonnull
-    protected abstract T parseValue(final ExecutionContext<E> context, final StringReader stringReader) throws ArgumentParseException;
+    public abstract T parseValue(final ExecutionContext<E> context, final StringReader stringReader) throws ArgumentParseException;
 
     public abstract void parseCompletions(final List<String> completions, final ExecutionContext<E> context, final StringReader stringReader);
 
@@ -100,13 +76,8 @@ public abstract class ArgumentNode<E, T> {
         return this;
     }
 
-    public ArgumentNode<E, T> optional(final CompletionsProvider<E> completionsProvider) {
-        this.optionalCompletionsProvider = completionsProvider;
-        return this;
-    }
-
-    public ArgumentNode<E, T> enforced(final CompletionsProvider<E> completionsProvider) {
-        this.enforcedCompletionsProvider = completionsProvider;
+    public ArgumentNode<E, T> suggestions(final CompletionsProvider<E> completionsProvider) {
+        this.completionsProvider = completionsProvider;
         return this;
     }
 

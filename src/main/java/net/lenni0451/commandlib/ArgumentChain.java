@@ -74,7 +74,7 @@ public class ArgumentChain<E> {
             ArgumentNode<E, ?> argument = this.arguments.get(i);
             boolean isLast = i == this.arguments.size() - 1;
             try {
-                out.add(argument.parse(context, reader));
+                out.add(argument.parseValue(context, reader));
                 if (!isLast && !reader.canRead()) throw new ChainExecutionException(ChainExecutionException.Reason.NO_ARGUMENTS_LEFT);
             } catch (ArgumentParseException e) {
                 throw new ChainExecutionException(e);
