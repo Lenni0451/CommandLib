@@ -6,6 +6,7 @@ import net.lenni0451.commandlib.nodes.StringArgumentNode;
 import net.lenni0451.commandlib.utils.ArgumentComparator;
 import net.lenni0451.commandlib.utils.StringReader;
 
+import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,27 +36,37 @@ public class CommandExecutor<E> {
         return null;
     }
 
+    @Nullable
     public <T> T execute(final E executor, final String command) throws CommandNotFoundException {
         return this.execute(executor, new StringReader(command));
     }
 
+    @Nullable
     public <T> T execute(final E executor, final StringReader reader) throws CommandNotFoundException {
+        if (!reader.canRead()) throw new CommandNotFoundException("<none>");
         ExecutionContext<E> context = new ExecutionContext<>(this.argumentComparator, executor);
-        Map<ArgumentChain<E>, List<Object>> matchingChains = this.findMatchingChains(context, reader);
-        return this.executeChain(matchingChains, context, reader);
+        Map<ArgumentChain<E>, ChainExecutionException> closeChains = new HashMap<>();
+        Map<ArgumentChain<E>, List<Object>> matchingChains = this.findMatchingChains(closeChains, context, reader);
+        try {
+            return this.executeChain(matchingChains, context, reader);
+        } catch (CommandNotFoundException e) {
+            if (closeChains.isEmpty()) throw e;
+
+            ArgumentChain<E> mostLikelyChain = this.findBestChain(closeChains.keySet());
+            throw new CommandNotFoundException(e.getCommand(), mostLikelyChain, closeChains.get(mostLikelyChain));
+        }
     }
 
-    private Map<ArgumentChain<E>, List<Object>> findMatchingChains(final ExecutionContext<E> context, final StringReader reader) {
+    private Map<ArgumentChain<E>, List<Object>> findMatchingChains(final Map<ArgumentChain<E>, ChainExecutionException> closeChains, final ExecutionContext<E> context, final StringReader reader) {
         Map<ArgumentChain<E>, List<Object>> out = new HashMap<>();
         for (List<ArgumentChain<E>> chains : this.chains.values()) {
             for (ArgumentChain<E> chain : chains) {
                 int cursor = reader.getCursor();
                 try {
                     List<Object> arguments = chain.execute(context, reader);
-                    if (!reader.canRead()) out.put(chain, arguments);
-                    //else ; //TODO: Reader has more chars left. Show extra data exception if no other chain matches
-                } catch (ChainExecutionException ignored) {
-                    //TODO: Check reason and show missing arguments exception if no other chain matches
+                    out.put(chain, arguments);
+                } catch (ChainExecutionException e) {
+                    if (e.getExecutionIndex() != 0) closeChains.put(chain, e);
                 }
                 reader.setCursor(cursor);
             }

@@ -54,6 +54,10 @@ public class ArgumentChain<E> {
         this.arguments = new ArrayList<>();
     }
 
+    private ArgumentChain(final List<ArgumentNode<E, ?>> arguments) {
+        this.arguments = arguments;
+    }
+
     private ArgumentChain(final ArgumentNode<E, ?> argument) {
         this.arguments = new ArrayList<>();
         this.arguments.add(argument);
@@ -77,18 +81,28 @@ public class ArgumentChain<E> {
         return weights;
     }
 
+    public ArgumentNode<E, ?> getArgument(final int index) {
+        return this.arguments.get(index);
+    }
+
     public List<Object> execute(final ExecutionContext<E> context, final StringReader reader) throws ChainExecutionException {
         List<Object> out = new ArrayList<>();
         for (int i = 0; i < this.arguments.size(); i++) {
+            int cursor = reader.getCursor();
             ArgumentNode<E, ?> argument = this.arguments.get(i);
             boolean isLast = i == this.arguments.size() - 1;
             try {
                 out.add(argument.parseValue(context, reader));
-                if (!isLast && !reader.canRead()) throw new ChainExecutionException(ChainExecutionException.Reason.NO_ARGUMENTS_LEFT);
+                if (!isLast && !reader.canRead()) {
+                    String missingArguments = new ArgumentChain<>(this.arguments.subList(i + 1, this.arguments.size())).toString();
+                    throw new ChainExecutionException(ChainExecutionException.Reason.NO_ARGUMENTS_LEFT, i + 1, null, missingArguments);
+                } else if (isLast && reader.canRead()) {
+                    throw new ChainExecutionException(ChainExecutionException.Reason.TOO_MANY_ARGUMENTS, i, null, reader.readRemaining());
+                }
             } catch (ArgumentParseException e) {
-                throw new ChainExecutionException(e);
+                throw new ChainExecutionException(e, i, argument.name(), reader.getString().substring(cursor, reader.getCursor()));
             } catch (RuntimeException e) {
-                throw new ChainExecutionException(e);
+                throw new ChainExecutionException(e, i, argument.name(), reader.getString().substring(cursor, reader.getCursor()));
             }
         }
         return out;
