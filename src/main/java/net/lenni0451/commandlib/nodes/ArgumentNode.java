@@ -19,6 +19,7 @@ public abstract class ArgumentNode<E, T> {
     private final String description;
     private final List<ArgumentNode<E, ?>> children;
     protected int weight = 0;
+    protected boolean providesArgument = true;
     private CompletionsProvider<E> completionsProvider;
     private Function<ExecutionContext<E>, ?> executor;
 
@@ -47,6 +48,10 @@ public abstract class ArgumentNode<E, T> {
 
     public int weight() {
         return this.weight;
+    }
+
+    public boolean providesArgument() {
+        return this.providesArgument;
     }
 
     @Nullable

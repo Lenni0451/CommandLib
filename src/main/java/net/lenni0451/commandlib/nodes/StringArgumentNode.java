@@ -14,11 +14,13 @@ public class StringArgumentNode<E> extends ArgumentNode<E, String> {
     public StringArgumentNode(final String name) {
         super(name);
         this.weight = 100;
+        this.providesArgument = false;
     }
 
     public StringArgumentNode(final String name, @Nullable final String description) {
         super(name, description);
         this.weight = 100;
+        this.providesArgument = false;
     }
 
     @Nonnull

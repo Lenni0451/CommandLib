@@ -24,8 +24,17 @@ public class ArgumentChain<E> {
                 ArgumentNode<E, ?> node = entry.getKey();
                 ArgumentChain<E> chain = entry.getValue();
 
-                if (node.executor() != null) chains.add(chain);
-                else if (node.children().isEmpty()) throw new IllegalStateException("Chain ended but has no executor: " + chain);
+                if (node.executor() != null) {
+                    List<String> names = new ArrayList<>();
+                    for (ArgumentNode<E, ?> argumentNode : chain.arguments) {
+                        if (!argumentNode.providesArgument()) continue;
+                        if (names.contains(argumentNode.name())) throw new IllegalArgumentException("Duplicate argument name '" + argumentNode.name() + "' in chain: " + chain);
+                        names.add(argumentNode.name());
+                    }
+                    chains.add(chain);
+                } else if (node.children().isEmpty()) {
+                    throw new IllegalStateException("Chain ended but has no executor: " + chain);
+                }
                 for (ArgumentNode<E, ?> child : node.children()) {
                     ArgumentChain<E> newChain = new ArgumentChain<>(chain);
                     newChain.addArgument(child);
@@ -84,7 +93,11 @@ public class ArgumentChain<E> {
     }
 
     public void populateArguments(final ExecutionContext<E> context, final List<Object> arguments) {
-        for (int i = 0; i < this.arguments.size(); i++) context.addArgument(this.arguments.get(i).name(), arguments.get(i));
+        for (int i = 0; i < this.arguments.size(); i++) {
+            ArgumentNode<E, ?> argumentNode = this.arguments.get(i);
+            if (!argumentNode.providesArgument()) continue;
+            context.addArgument(argumentNode.name(), arguments.get(i));
+        }
     }
 
     public Function<ExecutionContext<E>, ?> getExecutor() {
