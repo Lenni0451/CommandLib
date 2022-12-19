@@ -109,7 +109,11 @@ public class ArgumentChain<E> {
     @Override
     public String toString() {
         StringBuilder out = new StringBuilder();
-        for (ArgumentNode<E, ?> argument : this.arguments) out.append(argument.name()).append(" ");
+        for (ArgumentNode<E, ?> argument : this.arguments) {
+            if (argument.providesArgument()) out.append('<').append(argument.name()).append('>');
+            else out.append(argument.name());
+            out.append(' ');
+        }
         return out.toString().trim();
     }
 
