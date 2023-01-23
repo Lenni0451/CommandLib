@@ -2,16 +2,18 @@ package net.lenni0451.commandlib;
 
 import net.lenni0451.commandlib.exceptions.ChainExecutionException;
 import net.lenni0451.commandlib.exceptions.CommandNotFoundException;
+import net.lenni0451.commandlib.nodes.ArgumentNode;
 import net.lenni0451.commandlib.nodes.StringArgumentNode;
 import net.lenni0451.commandlib.utils.ArgumentComparator;
 import net.lenni0451.commandlib.utils.StringReader;
 import net.lenni0451.commandlib.utils.Util;
 
 import javax.annotation.Nullable;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static net.lenni0451.commandlib.exceptions.ChainExecutionException.Reason.ARGUMENT_PARSE_EXCEPTION;
+import static net.lenni0451.commandlib.exceptions.ChainExecutionException.Reason.NO_ARGUMENTS_LEFT;
 
 public class CommandExecutor<E> {
 
@@ -32,9 +34,42 @@ public class CommandExecutor<E> {
         this.chains.put(stringArgumentNode, ArgumentChain.buildChains(stringArgumentNode));
     }
 
-    public List<String> completions(final E executor, final String command) {
-        //TODO: Implement completions
-        return null;
+    public Set<String> completions(final E executor, final String command) {
+        return this.completions(executor, new StringReader(command));
+    }
+
+    public Set<String> completions(final E executor, final StringReader reader) {
+        Set<String> completions = new HashSet<>();
+        if (!reader.canRead()) {
+            completions.addAll(this.chains.keySet().stream().map(StringArgumentNode::name).collect(Collectors.toList()));
+        } else {
+            ExecutionContext<E> context = new ExecutionContext<>(this.argumentComparator, executor);
+            Map<ArgumentChain<E>, ChainExecutionException> closeChains = new HashMap<>();
+            Map<ArgumentChain<E>, List<ArgumentChain.MatchedArgument>> matchingChains = this.findMatchingChains(closeChains, true, context, reader);
+
+            boolean hasSpace = reader.getString().endsWith(" ");
+            if (!hasSpace) {
+                for (List<ArgumentChain.MatchedArgument> value : matchingChains.values()) {
+                    if (value.isEmpty()) continue;
+                    completions.add(value.get(value.size() - 1).getMatch());
+                }
+            }
+            for (Map.Entry<ArgumentChain<E>, ChainExecutionException> entry : closeChains.entrySet()) {
+                ArgumentChain<E> chain = entry.getKey();
+                ChainExecutionException exception = entry.getValue();
+                if (!ARGUMENT_PARSE_EXCEPTION.equals(exception.getReason()) && !NO_ARGUMENTS_LEFT.equals(exception.getReason())) continue;
+
+                boolean goBack = !hasSpace && NO_ARGUMENTS_LEFT.equals(exception.getReason());
+                reader.setCursor(exception.getReaderCursor());
+                ArgumentNode<E, ?> argument = chain.getArgument(exception.getExecutionIndex() - (goBack ? 1 : 0));
+                String check = reader.peekRemaining();
+                Set<String> argumentCompletions = argument.completions(context, reader);
+                for (String completion : argumentCompletions) {
+                    if (this.argumentComparator.startsWith(completion, check)) completions.add(completion);
+                }
+            }
+        }
+        return completions.stream().sorted().collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     @Nullable
@@ -47,7 +82,7 @@ public class CommandExecutor<E> {
         if (!reader.canRead()) throw new CommandNotFoundException("<none>");
         ExecutionContext<E> context = new ExecutionContext<>(this.argumentComparator, executor);
         Map<ArgumentChain<E>, ChainExecutionException> closeChains = new HashMap<>();
-        Map<ArgumentChain<E>, List<Object>> matchingChains = this.findMatchingChains(closeChains, context, reader);
+        Map<ArgumentChain<E>, List<ArgumentChain.MatchedArgument>> matchingChains = this.findMatchingChains(closeChains, false, context, reader);
         try {
             return this.executeChain(matchingChains, context, reader);
         } catch (CommandNotFoundException e) {
@@ -64,16 +99,16 @@ public class CommandExecutor<E> {
         }
     }
 
-    private Map<ArgumentChain<E>, List<Object>> findMatchingChains(final Map<ArgumentChain<E>, ChainExecutionException> closeChains, final ExecutionContext<E> context, final StringReader reader) {
-        Map<ArgumentChain<E>, List<Object>> out = new HashMap<>();
+    private Map<ArgumentChain<E>, List<ArgumentChain.MatchedArgument>> findMatchingChains(final Map<ArgumentChain<E>, ChainExecutionException> closeChains, final boolean closeMatchLiteral, final ExecutionContext<E> context, final StringReader reader) {
+        Map<ArgumentChain<E>, List<ArgumentChain.MatchedArgument>> out = new HashMap<>();
         for (List<ArgumentChain<E>> chains : this.chains.values()) {
             for (ArgumentChain<E> chain : chains) {
                 int cursor = reader.getCursor();
                 try {
-                    List<Object> arguments = chain.execute(context, reader);
+                    List<ArgumentChain.MatchedArgument> arguments = chain.execute(context, reader);
                     out.put(chain, arguments);
                 } catch (ChainExecutionException e) {
-                    if (e.getExecutionIndex() != 0) closeChains.put(chain, e);
+                    if (e.getExecutionIndex() != 0 || closeMatchLiteral) closeChains.put(chain, e);
                 }
                 reader.setCursor(cursor);
             }
@@ -81,15 +116,15 @@ public class CommandExecutor<E> {
         return out;
     }
 
-    private <T> T executeChain(final Map<ArgumentChain<E>, List<Object>> chains, final ExecutionContext<E> context, final StringReader reader) throws CommandNotFoundException {
+    private <T> T executeChain(final Map<ArgumentChain<E>, List<ArgumentChain.MatchedArgument>> chains, final ExecutionContext<E> context, final StringReader reader) throws CommandNotFoundException {
         if (chains.isEmpty()) throw new CommandNotFoundException(reader.readWordOrString());
         if (chains.size() == 1) {
             ArgumentChain<E> chain = chains.keySet().iterator().next();
-            List<Object> arguments = chains.get(chain);
+            List<ArgumentChain.MatchedArgument> arguments = chains.get(chain);
             chain.populateArguments(context, arguments);
             return (T) chain.getExecutor().apply(context);
         } else {
-            Map<ArgumentChain<E>, List<Object>> bestChainMap = new HashMap<>();
+            Map<ArgumentChain<E>, List<ArgumentChain.MatchedArgument>> bestChainMap = new HashMap<>();
             ArgumentChain<E> bestChain = this.findBestChain(chains.keySet());
             bestChainMap.put(bestChain, chains.get(bestChain));
             return this.executeChain(bestChainMap, context, reader);

@@ -68,6 +68,10 @@ public class StringReader {
         return this.string.charAt(this.cursor + offset);
     }
 
+    public String peekRemaining() {
+        return this.string.substring(this.cursor);
+    }
+
     public StringReader skipWhitespace() {
         while (this.canRead() && Character.isWhitespace(this.peek())) this.cursor++;
         return this;

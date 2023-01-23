@@ -5,7 +5,7 @@ import net.lenni0451.commandlib.exceptions.ArgumentParseException;
 import net.lenni0451.commandlib.utils.StringReader;
 
 import javax.annotation.Nonnull;
-import java.util.List;
+import java.util.Set;
 
 public interface ArgumentType<E, T> {
 
@@ -16,6 +16,6 @@ public interface ArgumentType<E, T> {
     @Nonnull
     T parseValue(final ExecutionContext<E> context, final StringReader stringReader) throws ArgumentParseException, RuntimeException;
 
-    void parseCompletions(final List<String> completions, final ExecutionContext<E> context, final StringReader stringReader);
+    void parseCompletions(final Set<String> completions, final ExecutionContext<E> context, final StringReader stringReader);
 
 }

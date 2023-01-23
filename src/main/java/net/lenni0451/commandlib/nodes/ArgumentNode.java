@@ -8,7 +8,9 @@ import net.lenni0451.commandlib.utils.StringReader;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -64,8 +66,8 @@ public abstract class ArgumentNode<E, T> {
         return this.executor;
     }
 
-    public List<String> completions(final ExecutionContext<E> context, final StringReader reader) {
-        List<String> completions = new ArrayList<>();
+    public Set<String> completions(final ExecutionContext<E> context, final StringReader reader) {
+        Set<String> completions = new HashSet<>();
         if (this.completionsProvider != null) this.completionsProvider.provide(completions, context, reader);
         else this.parseCompletions(completions, context, reader);
         return completions;
@@ -74,7 +76,7 @@ public abstract class ArgumentNode<E, T> {
     @Nonnull
     public abstract T parseValue(final ExecutionContext<E> context, final StringReader stringReader) throws ArgumentParseException, RuntimeException;
 
-    public abstract void parseCompletions(final List<String> completions, final ExecutionContext<E> context, final StringReader stringReader);
+    public abstract void parseCompletions(final Set<String> completions, final ExecutionContext<E> context, final StringReader stringReader);
 
     public ArgumentNode<E, T> then(final ArgumentNode<E, ?> child) {
         this.children.add(child);

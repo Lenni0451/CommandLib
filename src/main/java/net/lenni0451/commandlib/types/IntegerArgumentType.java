@@ -6,8 +6,8 @@ import net.lenni0451.commandlib.utils.StringReader;
 import net.lenni0451.commandlib.utils.Util;
 
 import javax.annotation.Nonnull;
-import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public class IntegerArgumentType<E> implements ArgumentType<E, Integer> {
 
@@ -57,7 +57,7 @@ public class IntegerArgumentType<E> implements ArgumentType<E, Integer> {
     }
 
     @Override
-    public void parseCompletions(List<String> completions, ExecutionContext<E> context, StringReader stringReader) {
+    public void parseCompletions(Set<String> completions, ExecutionContext<E> context, StringReader stringReader) {
         Optional<Integer> number = Util.ofThrowing(() -> Integer.valueOf(stringReader.readIntegerNumber()));
         if (number.isPresent()) {
             if (this.min != null && number.get() < this.min) return;

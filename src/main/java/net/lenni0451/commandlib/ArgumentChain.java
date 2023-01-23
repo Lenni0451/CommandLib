@@ -85,34 +85,35 @@ public class ArgumentChain<E> {
         return this.arguments.get(index);
     }
 
-    public List<Object> execute(final ExecutionContext<E> context, final StringReader reader) throws ChainExecutionException {
-        List<Object> out = new ArrayList<>();
+    public List<MatchedArgument> execute(final ExecutionContext<E> context, final StringReader reader) throws ChainExecutionException {
+        List<MatchedArgument> out = new ArrayList<>();
         for (int i = 0; i < this.arguments.size(); i++) {
             int cursor = reader.getCursor();
             ArgumentNode<E, ?> argument = this.arguments.get(i);
             boolean isLast = i == this.arguments.size() - 1;
             try {
-                out.add(argument.parseValue(context, reader));
+                Object parsedArgument = argument.parseValue(context, reader);
+                out.add(new MatchedArgument(reader.getString().substring(cursor, reader.getCursor()), parsedArgument));
                 if (!isLast && !reader.canRead()) {
                     String missingArguments = new ArgumentChain<>(this.arguments.subList(i + 1, this.arguments.size())).toString();
-                    throw new ChainExecutionException(ChainExecutionException.Reason.NO_ARGUMENTS_LEFT, i + 1, null, missingArguments);
+                    throw new ChainExecutionException(ChainExecutionException.Reason.NO_ARGUMENTS_LEFT, i + 1, reader.getCursor(), null, missingArguments);
                 } else if (isLast && reader.canRead()) {
-                    throw new ChainExecutionException(ChainExecutionException.Reason.TOO_MANY_ARGUMENTS, i, null, reader.readRemaining());
+                    throw new ChainExecutionException(ChainExecutionException.Reason.TOO_MANY_ARGUMENTS, i, reader.getCursor(), null, reader.readRemaining());
                 }
             } catch (ArgumentParseException e) {
-                throw new ChainExecutionException(e, i, argument.name(), reader.getString().substring(cursor, reader.getCursor()));
+                throw new ChainExecutionException(e, i, cursor, argument.name(), reader.getString().substring(cursor, reader.getCursor()));
             } catch (RuntimeException e) {
-                throw new ChainExecutionException(e, i, argument.name(), reader.getString().substring(cursor, reader.getCursor()));
+                throw new ChainExecutionException(e, i, cursor, argument.name(), reader.getString().substring(cursor, reader.getCursor()));
             }
         }
         return out;
     }
 
-    public void populateArguments(final ExecutionContext<E> context, final List<Object> arguments) {
+    public void populateArguments(final ExecutionContext<E> context, final List<ArgumentChain.MatchedArgument> arguments) {
         for (int i = 0; i < this.arguments.size(); i++) {
             ArgumentNode<E, ?> argumentNode = this.arguments.get(i);
             if (!argumentNode.providesArgument()) continue;
-            context.addArgument(argumentNode.name(), arguments.get(i));
+            context.addArgument(argumentNode.name(), arguments.get(i).getValue());
         }
     }
 
@@ -129,6 +130,25 @@ public class ArgumentChain<E> {
             out.append(' ');
         }
         return out.toString().trim();
+    }
+
+
+    public static class MatchedArgument {
+        private final String match;
+        private final Object value;
+
+        private MatchedArgument(final String match, final Object value) {
+            this.match = match;
+            this.value = value;
+        }
+
+        public String getMatch() {
+            return this.match;
+        }
+
+        public Object getValue() {
+            return this.value;
+        }
     }
 
 }

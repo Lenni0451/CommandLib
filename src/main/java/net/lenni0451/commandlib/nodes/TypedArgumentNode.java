@@ -7,7 +7,7 @@ import net.lenni0451.commandlib.utils.StringReader;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.List;
+import java.util.Set;
 
 public class TypedArgumentNode<E, T> extends ArgumentNode<E, T> {
 
@@ -32,7 +32,7 @@ public class TypedArgumentNode<E, T> extends ArgumentNode<E, T> {
     }
 
     @Override
-    public void parseCompletions(List<String> completions, ExecutionContext<E> context, StringReader stringReader) {
+    public void parseCompletions(Set<String> completions, ExecutionContext<E> context, StringReader stringReader) {
         this.type.parseCompletions(completions, context, stringReader);
     }
 
