@@ -3,25 +3,23 @@ package net.lenni0451.commandlib.exceptions;
 import net.lenni0451.commandlib.ArgumentChain;
 
 import javax.annotation.Nullable;
+import java.util.Map;
 
 public class CommandNotFoundException extends Exception {
 
     private final String command;
-    private final ArgumentChain<?> mostLikelyChain;
-    private final ChainExecutionException chainExecutionException;
+    private final Map<ArgumentChain<?>, ChainExecutionException> mostLikelyChains;
 
     public CommandNotFoundException(final String command) {
         super("The command '" + command + "' does not exist");
         this.command = command;
-        this.mostLikelyChain = null;
-        this.chainExecutionException = null;
+        this.mostLikelyChains = null;
     }
 
-    public CommandNotFoundException(final String command, final ArgumentChain<?> mostLikelyChain, final ChainExecutionException chainExecutionException) {
+    public CommandNotFoundException(final String command, final Map<ArgumentChain<?>, ChainExecutionException> mostLikelyChains) {
         super("The command '" + command + "' does not exist");
         this.command = command;
-        this.mostLikelyChain = mostLikelyChain;
-        this.chainExecutionException = chainExecutionException;
+        this.mostLikelyChains = mostLikelyChains;
     }
 
     public String getCommand() {
@@ -29,13 +27,8 @@ public class CommandNotFoundException extends Exception {
     }
 
     @Nullable
-    public ArgumentChain<?> getMostLikelyChain() {
-        return this.mostLikelyChain;
-    }
-
-    @Nullable
-    public ChainExecutionException getChainExecutionException() {
-        return this.chainExecutionException;
+    public Map<ArgumentChain<?>, ChainExecutionException> getMostLikelyChains() {
+        return this.mostLikelyChains;
     }
 
 }

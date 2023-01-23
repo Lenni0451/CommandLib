@@ -12,4 +12,8 @@ public class Util {
         }
     }
 
+    public static <T> T cast(final Object o) {
+        return (T) o;
+    }
+
 }

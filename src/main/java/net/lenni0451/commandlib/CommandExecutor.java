@@ -5,6 +5,7 @@ import net.lenni0451.commandlib.exceptions.CommandNotFoundException;
 import net.lenni0451.commandlib.nodes.StringArgumentNode;
 import net.lenni0451.commandlib.utils.ArgumentComparator;
 import net.lenni0451.commandlib.utils.StringReader;
+import net.lenni0451.commandlib.utils.Util;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
@@ -53,7 +54,13 @@ public class CommandExecutor<E> {
             if (closeChains.isEmpty()) throw e;
 
             ArgumentChain<E> mostLikelyChain = this.findBestChain(closeChains.keySet());
-            throw new CommandNotFoundException(e.getCommand(), mostLikelyChain, closeChains.get(mostLikelyChain));
+            Map<ArgumentChain<E>, ChainExecutionException> similarChains = new HashMap<>();
+            for (ArgumentChain<E> chain : closeChains.keySet()) {
+                if (this.compareChains(mostLikelyChain, chain) == 0 && closeChains.get(mostLikelyChain).getReason().equals(closeChains.get(chain).getReason())) {
+                    similarChains.put(chain, closeChains.get(chain));
+                }
+            }
+            throw new CommandNotFoundException(e.getCommand(), Util.cast(similarChains));
         }
     }
 

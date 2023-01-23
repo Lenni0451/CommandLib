@@ -1,3 +1,4 @@
+import net.lenni0451.commandlib.ArgumentChain;
 import net.lenni0451.commandlib.CommandExecutor;
 import net.lenni0451.commandlib.exceptions.ChainExecutionException;
 import net.lenni0451.commandlib.exceptions.CommandNotFoundException;
@@ -5,6 +6,7 @@ import net.lenni0451.commandlib.nodes.StringArgumentNode;
 import net.lenni0451.commandlib.utils.ArgumentBuilder;
 import net.lenni0451.commandlib.utils.ArgumentComparator;
 
+import java.util.Map;
 import java.util.Scanner;
 
 import static net.lenni0451.commandlib.types.IntegerArgumentType.integer;
@@ -43,16 +45,18 @@ public class Test2 implements ArgumentBuilder<Runtime> {
             try {
                 executor.execute(Runtime.getRuntime(), line);
             } catch (CommandNotFoundException e) {
-                if (e.getChainExecutionException() == null) {
-                    System.out.println(e.getMessage());
-                } else {
-                    ChainExecutionException chainExecutionException = e.getChainExecutionException();
-                    if (chainExecutionException.getReason().equals(ChainExecutionException.Reason.NO_ARGUMENTS_LEFT)) {
-                        System.out.println("No data left! Missing arguments: " + chainExecutionException.getExtraData());
-                    } else if (chainExecutionException.getReason().equals(ChainExecutionException.Reason.TOO_MANY_ARGUMENTS)) {
-                        System.out.println("Too many arguments! Extra arguments: " + chainExecutionException.getExtraData());
+                for (Map.Entry<ArgumentChain<?>, ChainExecutionException> entry : e.getMostLikelyChains().entrySet()) {
+                    if (entry.getValue() == null) {
+                        System.out.println(e.getMessage());
                     } else {
-                        System.out.println("Failed to parse argument '" + chainExecutionException.getArgumentName() + "': " + chainExecutionException.getExtraData());
+                        ChainExecutionException chainExecutionException = entry.getValue();
+                        if (chainExecutionException.getReason().equals(ChainExecutionException.Reason.NO_ARGUMENTS_LEFT)) {
+                            System.out.println("No data left! Missing arguments: " + chainExecutionException.getExtraData());
+                        } else if (chainExecutionException.getReason().equals(ChainExecutionException.Reason.TOO_MANY_ARGUMENTS)) {
+                            System.out.println("Too many arguments! Extra arguments: " + chainExecutionException.getExtraData());
+                        } else {
+                            System.out.println("Failed to parse argument '" + chainExecutionException.getArgumentName() + "': " + chainExecutionException.getExtraData());
+                        }
                     }
                 }
             }
