@@ -6,6 +6,7 @@ import net.lenni0451.commandlib.nodes.TypedArgumentNode;
 import net.lenni0451.commandlib.types.ArgumentType;
 import net.lenni0451.commandlib.utils.Util;
 import net.lenni0451.commandlib.utils.interfaces.CompletionsProvider;
+import net.lenni0451.commandlib.utils.interfaces.ValueValidator;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -28,42 +29,52 @@ public class LineBuilder<E> {
     }
 
     public <T> LineBuilder<E> arg(final String name, final ArgumentType<E, T> type) {
-        this.nodes.add(new LineNode<>(name, null, type, null, null));
+        this.nodes.add(new LineNode<>(name, null, type, null, null, null));
         return this;
     }
 
     public <T> LineBuilder<E> arg(final String name, final String description, final ArgumentType<E, T> type) {
-        this.nodes.add(new LineNode<>(name, description, type, null, null));
+        this.nodes.add(new LineNode<>(name, description, type, null, null, null));
         return this;
     }
 
     public <T> LineBuilder<E> arg(final String name, final ArgumentType<E, T> type, final CompletionsProvider<E> completionsProvider) {
-        this.nodes.add(new LineNode<>(name, null, type, completionsProvider, null));
+        this.nodes.add(new LineNode<>(name, null, type, completionsProvider, null, null));
         return this;
     }
 
     public <T> LineBuilder<E> arg(final String name, final String description, final ArgumentType<E, T> type, final CompletionsProvider<E> completionsProvider) {
-        this.nodes.add(new LineNode<>(name, description, type, completionsProvider, null));
+        this.nodes.add(new LineNode<>(name, description, type, completionsProvider, null, null));
+        return this;
+    }
+
+    public <T> LineBuilder<E> arg(final String name, final ArgumentType<E, T> type, final ValueValidator<T> validator) {
+        this.nodes.add(new LineNode<>(name, null, type, null, validator, null));
+        return this;
+    }
+
+    public <T> LineBuilder<E> arg(final String name, final String description, final ArgumentType<E, T> type, final ValueValidator<T> validator) {
+        this.nodes.add(new LineNode<>(name, description, type, null, validator, null));
         return this;
     }
 
     public <T> LineBuilder<E> arg(final String name, final ArgumentType<E, T> type, final T defaultValue) {
-        this.nodes.add(new LineNode<>(name, null, type, null, defaultValue));
+        this.nodes.add(new LineNode<>(name, null, type, null, null, defaultValue));
         return this;
     }
 
     public <T> LineBuilder<E> arg(final String name, final String description, final ArgumentType<E, T> type, final T defaultValue) {
-        this.nodes.add(new LineNode<>(name, description, type, null, defaultValue));
+        this.nodes.add(new LineNode<>(name, description, type, null, null, defaultValue));
         return this;
     }
 
-    public <T> LineBuilder<E> arg(final String name, final ArgumentType<E, T> type, final CompletionsProvider<E> completionsProvider, final T defaultValue) {
-        this.nodes.add(new LineNode<>(name, null, type, completionsProvider, defaultValue));
+    public <T> LineBuilder<E> arg(final String name, final ArgumentType<E, T> type, final CompletionsProvider<E> completionsProvider, @Nullable final ValueValidator<T> validator, final T defaultValue) {
+        this.nodes.add(new LineNode<>(name, null, type, completionsProvider, validator, defaultValue));
         return this;
     }
 
-    public <T> LineBuilder<E> arg(final String name, final String description, final ArgumentType<E, T> type, final CompletionsProvider<E> completionsProvider, final T defaultValue) {
-        this.nodes.add(new LineNode<>(name, description, type, completionsProvider, defaultValue));
+    public <T> LineBuilder<E> arg(final String name, final String description, final ArgumentType<E, T> type, final CompletionsProvider<E> completionsProvider, @Nullable final ValueValidator<T> validator, final T defaultValue) {
+        this.nodes.add(new LineNode<>(name, description, type, completionsProvider, validator, defaultValue));
         return this;
     }
 
@@ -116,19 +127,23 @@ public class LineBuilder<E> {
         private final String description;
         private final ArgumentType<E, T> type;
         private final CompletionsProvider<E> completionsProvider;
+        private final ValueValidator<T> validator;
         private final T defaultValue;
 
-        private LineNode(final String name, @Nullable final String description, final ArgumentType<E, T> argumentType, @Nullable final CompletionsProvider<E> completionsProvider, @Nullable final T defaultValue) {
+        private LineNode(final String name, @Nullable final String description, final ArgumentType<E, T> argumentType, @Nullable final CompletionsProvider<E> completionsProvider, @Nullable final ValueValidator<T> validator, @Nullable final T defaultValue) {
             this.name = name;
             this.description = description;
             this.type = argumentType;
             this.completionsProvider = completionsProvider;
+            this.validator = validator;
             this.defaultValue = defaultValue;
         }
 
         private TypedArgumentNode<E, T> toArgumentNode() {
             TypedArgumentNode<E, T> node = new TypedArgumentNode<>(this.name, this.description, this.type);
-            node.suggestions(this.completionsProvider);
+            node
+                    .suggestions(this.completionsProvider)
+                    .validator(this.validator);
             return node;
         }
     }
