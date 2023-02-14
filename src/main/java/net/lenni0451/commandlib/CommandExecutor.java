@@ -29,6 +29,11 @@ public class CommandExecutor<E> {
         this.chains = new HashMap<>();
     }
 
+    public void register(final ArgumentNode<E, ?> argumentNode) {
+        if (!(argumentNode instanceof StringArgumentNode)) throw new IllegalArgumentException("Register argument node must be a StringArgumentNode");
+        this.register((StringArgumentNode<E>) argumentNode);
+    }
+
     public void register(final StringArgumentNode<E> stringArgumentNode) {
         this.chains.entrySet().removeIf(entry -> this.argumentComparator.compare(entry.getKey().name(), stringArgumentNode.name()));
         this.chains.put(stringArgumentNode, ArgumentChain.buildChains(stringArgumentNode));

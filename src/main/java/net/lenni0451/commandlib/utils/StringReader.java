@@ -33,7 +33,7 @@ public class StringReader {
         return this.string.length();
     }
 
-    public int left() {
+    public int remaining() {
         return this.string.length() - this.cursor;
     }
 
@@ -129,20 +129,17 @@ public class StringReader {
     }
 
     public String readRemaining() {
-        return this.read(this.left());
+        return this.read(this.remaining());
     }
 
     public String readWord() {
-        String word = this.readUntil(' ');
-        this.skipWhitespace();
-        return word;
+        return this.readUntil(' ');
     }
 
     public String readString() {
         char start = this.require('"', '\'').read();
         String s = this.readUntil(start, true);
         this.require(start).skip();
-        this.skipWhitespace();
         return s;
     }
 
