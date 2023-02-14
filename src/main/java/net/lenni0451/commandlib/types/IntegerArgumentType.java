@@ -39,7 +39,7 @@ public class IntegerArgumentType<E> implements ArgumentType<E, Integer> {
 
     @Override
     public int getWeight() {
-        return 10;
+        return 50;
     }
 
     @Nonnull

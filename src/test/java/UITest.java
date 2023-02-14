@@ -3,6 +3,7 @@ import net.lenni0451.commandlib.CommandExecutor;
 import net.lenni0451.commandlib.exceptions.ChainExecutionException;
 import net.lenni0451.commandlib.exceptions.CommandNotFoundException;
 import net.lenni0451.commandlib.types.IntegerArgumentType;
+import net.lenni0451.commandlib.types.StringArgumentType;
 import net.lenni0451.commandlib.utils.ArgumentBuilder;
 
 import javax.swing.*;
@@ -87,6 +88,18 @@ public class UITest extends JFrame implements ArgumentBuilder<ExampleExecutor> {
                             System.out.println("List: " + c.getArgument("list"));
                         }))
         );
+        this.commandExecutor.register(
+                this.string("string_test")
+                        .then(this.string("word").then(this.typed("s", StringArgumentType.word()).executes(c -> {
+                            System.out.println("Word: " + c.getArgument("s"));
+                        })))
+                        .then(this.string("string").then(this.typed("s", StringArgumentType.string()).executes(c -> {
+                            System.out.println("String: " + c.getArgument("s"));
+                        })))
+                        .then(this.string("greedy").then(this.typed("s", StringArgumentType.greedyString()).executes(c -> {
+                            System.out.println("Greedy: " + c.getArgument("s"));
+                        })))
+        );
     }
 
     private void onTextChange() {
@@ -110,7 +123,9 @@ public class UITest extends JFrame implements ArgumentBuilder<ExampleExecutor> {
                     ""
             );
             if (e.getMostLikelyChains() == null || e.getMostLikelyChains().isEmpty()) {
-                this.addOutput("No likely chains found");
+                this.addOutput(
+                        "No likely chains found"
+                );
             } else {
                 for (Map.Entry<ArgumentChain<?>, ChainExecutionException> entry : e.getMostLikelyChains().entrySet()) {
                     this.addOutput(
