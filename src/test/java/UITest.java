@@ -1,8 +1,10 @@
 import net.lenni0451.commandlib.ArgumentChain;
 import net.lenni0451.commandlib.CommandExecutor;
 import net.lenni0451.commandlib.builder.ArgumentBuilder;
+import net.lenni0451.commandlib.builder.LineBuilder;
 import net.lenni0451.commandlib.exceptions.ChainExecutionException;
 import net.lenni0451.commandlib.exceptions.CommandNotFoundException;
+import net.lenni0451.commandlib.nodes.ArgumentNode;
 import net.lenni0451.commandlib.nodes.StringArgumentNode;
 import net.lenni0451.commandlib.types.IntegerArgumentType;
 import net.lenni0451.commandlib.types.StringArgumentType;
@@ -15,6 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 
 public class UITest extends JFrame implements ArgumentBuilder<ExampleExecutor> {
 
@@ -103,22 +106,18 @@ public class UITest extends JFrame implements ArgumentBuilder<ExampleExecutor> {
                             System.out.println("Greedy: " + c.getArgument("s"));
                         })))
         );
-        this.commandExecutor.register(
-                this.string("line").then(this.line()
-                        .arg("test", StringArgumentType.word())
-                        .arg("test2", this.dynamicType(r -> Integer.parseInt(r.readWordOrString())))
-                        .executes(c -> {
-                            System.out.println(c.getArgument("test") + " " + c.getArgument("test2"));
-                        }))
-        );
-        this.commandExecutor.register(
-                this.string("oline").then(this.line()
-                        .arg("test", StringArgumentType.word())
-                        .arg("test2", this.dynamicType(r -> Integer.parseInt(r.readWordOrString())), 1337)
-                        .executes(c -> {
-                            System.out.println(c.getArgument("test") + " " + c.getArgument("test2"));
-                        }))
-        );
+        this.register("line", line -> line
+                .arg("arg1", StringArgumentType.word())
+                .arg("arg2", this.dynamicType(r -> Integer.parseInt(r.readWordOrString())))
+                .executes(c -> {
+                    System.out.println(c.getArgument("arg1") + " " + c.getArgument("arg2"));
+                }));
+        this.register("oline", line -> line
+                .arg("arg1", StringArgumentType.word())
+                .arg("arg2", this.dynamicType(r -> Integer.parseInt(r.readWordOrString())), 1337)
+                .executes(c -> {
+                    System.out.println(c.getArgument("arg1") + " " + c.getArgument("arg2"));
+                }));
 
         this.commandExecutor.register(
                 this.string("print").executes(() -> {
@@ -137,6 +136,10 @@ public class UITest extends JFrame implements ArgumentBuilder<ExampleExecutor> {
                     }
                 })
         );
+    }
+
+    private void register(final String name, final Function<LineBuilder<ExampleExecutor>, ArgumentNode<ExampleExecutor, ?>> builder) {
+        this.commandExecutor.register(this.string(name).then(builder.apply(this.line())));
     }
 
     private void onTextChange() {
@@ -169,12 +172,12 @@ public class UITest extends JFrame implements ArgumentBuilder<ExampleExecutor> {
                             "Likely chain",
                             entry.getKey(),
                             "Chain exception:",
-                            entry.getValue().getReason(),
-                            entry.getValue().getExecutionIndex(),
-                            entry.getValue().getReaderCursor(),
-                            entry.getValue().getArgumentName(),
-                            entry.getValue().getExtraData(),
-                            entry.getValue().getCause(),
+                            " - Reason: " + entry.getValue().getReason(),
+                            " - Execution Index: " + entry.getValue().getExecutionIndex(),
+                            " - Reader Cursor: " + entry.getValue().getReaderCursor(),
+                            " - Argument Name: " + entry.getValue().getArgumentName(),
+                            " - Extra Data: " + entry.getValue().getExtraData(),
+                            " - Cause: " + entry.getValue().getCause(),
                             ""
                     );
                 }
