@@ -1,5 +1,7 @@
 package net.lenni0451.commandlib.utils;
 
+import net.lenni0451.commandlib.utils.interfaces.ThrowingSupplier;
+
 import java.util.Optional;
 
 public class Util {

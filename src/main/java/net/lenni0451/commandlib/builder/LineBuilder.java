@@ -4,8 +4,8 @@ import net.lenni0451.commandlib.ExecutionContext;
 import net.lenni0451.commandlib.nodes.ArgumentNode;
 import net.lenni0451.commandlib.nodes.TypedArgumentNode;
 import net.lenni0451.commandlib.types.ArgumentType;
-import net.lenni0451.commandlib.utils.CompletionsProvider;
 import net.lenni0451.commandlib.utils.Util;
+import net.lenni0451.commandlib.utils.interfaces.CompletionsProvider;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;

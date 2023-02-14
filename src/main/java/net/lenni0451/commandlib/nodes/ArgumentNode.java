@@ -2,8 +2,9 @@ package net.lenni0451.commandlib.nodes;
 
 import net.lenni0451.commandlib.ExecutionContext;
 import net.lenni0451.commandlib.exceptions.ArgumentParseException;
-import net.lenni0451.commandlib.utils.CompletionsProvider;
 import net.lenni0451.commandlib.utils.StringReader;
+import net.lenni0451.commandlib.utils.interfaces.CompletionsProvider;
+import net.lenni0451.commandlib.utils.interfaces.ValueValidator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -22,6 +23,7 @@ public abstract class ArgumentNode<E, T> {
     private final List<ArgumentNode<E, ?>> children;
     protected int weight = 0;
     protected boolean providesArgument = true;
+    private ValueValidator<T> validator;
     private CompletionsProvider<E> completionsProvider;
     private Function<ExecutionContext<E>, ?> executor;
 
@@ -66,6 +68,13 @@ public abstract class ArgumentNode<E, T> {
         return this.executor;
     }
 
+    @Nonnull
+    public T value(final ExecutionContext<E> context, final StringReader stringReader) throws ArgumentParseException, RuntimeException {
+        T value = this.parseValue(context, stringReader);
+        if (this.validator != null && !this.validator.validate(value)) throw new ArgumentParseException("Invalid value '" + value + "' for argument '" + this.name + "'");
+        return value;
+    }
+
     public Set<String> completions(final ExecutionContext<E> context, final StringReader reader) {
         Set<String> completions = new HashSet<>();
         if (this.completionsProvider != null) this.completionsProvider.provide(completions, context, reader);
@@ -74,16 +83,21 @@ public abstract class ArgumentNode<E, T> {
     }
 
     @Nonnull
-    public abstract T parseValue(final ExecutionContext<E> context, final StringReader stringReader) throws ArgumentParseException, RuntimeException;
+    protected abstract T parseValue(final ExecutionContext<E> context, final StringReader stringReader) throws ArgumentParseException, RuntimeException;
 
-    public abstract void parseCompletions(final Set<String> completions, final ExecutionContext<E> context, final StringReader stringReader);
+    protected abstract void parseCompletions(final Set<String> completions, final ExecutionContext<E> context, final StringReader stringReader);
 
     public ArgumentNode<E, T> then(final ArgumentNode<E, ?> child) {
         this.children.add(child);
         return this;
     }
 
-    public ArgumentNode<E, T> suggestions(final CompletionsProvider<E> completionsProvider) {
+    public ArgumentNode<E, T> validator(@Nullable final ValueValidator<T> validator) {
+        this.validator = validator;
+        return this;
+    }
+
+    public ArgumentNode<E, T> suggestions(@Nullable final CompletionsProvider<E> completionsProvider) {
         this.completionsProvider = completionsProvider;
         return this;
     }

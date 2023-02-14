@@ -5,7 +5,7 @@ import net.lenni0451.commandlib.nodes.StringArgumentNode;
 import net.lenni0451.commandlib.nodes.TypedArgumentNode;
 import net.lenni0451.commandlib.types.ArgumentType;
 import net.lenni0451.commandlib.types.DynamicType;
-import net.lenni0451.commandlib.utils.CompletionsProvider;
+import net.lenni0451.commandlib.utils.interfaces.CompletionsProvider;
 
 import javax.annotation.Nullable;
 
