@@ -1,5 +1,6 @@
 package net.lenni0451.commandlib.utils;
 
+import net.lenni0451.commandlib.nodes.ListArgumentNode;
 import net.lenni0451.commandlib.nodes.StringArgumentNode;
 import net.lenni0451.commandlib.nodes.TypedArgumentNode;
 import net.lenni0451.commandlib.types.ArgumentType;
@@ -22,6 +23,14 @@ public interface ArgumentBuilder<E> {
 
     default <T> TypedArgumentNode<E, T> typed(final String name, @Nullable final String description, final ArgumentType<E, T> type) {
         return new TypedArgumentNode<>(name, description, type);
+    }
+
+    default <T> ListArgumentNode<E, T> list(final String name, final ArgumentType<E, T> type) {
+        return new ListArgumentNode<>(name, type);
+    }
+
+    default <T> ListArgumentNode<E, T> list(final String name, @Nullable final String description, final ArgumentType<E, T> type) {
+        return new ListArgumentNode<>(name, description, type);
     }
 
 }

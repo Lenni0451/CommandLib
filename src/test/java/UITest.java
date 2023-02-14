@@ -33,6 +33,7 @@ public class UITest extends JFrame implements ArgumentBuilder<ExampleExecutor> {
 
         this.addElements();
         this.registerCommands();
+        this.onTextChange();
     }
 
     private void addElements() {
@@ -43,17 +44,17 @@ public class UITest extends JFrame implements ArgumentBuilder<ExampleExecutor> {
         this.input.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
-                UITest.this.onTextChange(e);
+                UITest.this.onTextChange();
             }
 
             @Override
             public void removeUpdate(DocumentEvent e) {
-                UITest.this.onTextChange(e);
+                UITest.this.onTextChange();
             }
 
             @Override
             public void changedUpdate(DocumentEvent e) {
-                UITest.this.onTextChange(e);
+                UITest.this.onTextChange();
             }
         });
         root.add(this.input);
@@ -80,13 +81,15 @@ public class UITest extends JFrame implements ArgumentBuilder<ExampleExecutor> {
                             System.out.println("Gamemode set to " + c.getArgument("mode"));
                         }))
         );
+        this.commandExecutor.register(
+                this.string("list_test")
+                        .then(this.list("list", IntegerArgumentType.integer(0, 100)).executes(c -> {
+                            System.out.println("List: " + c.getArgument("list"));
+                        }))
+        );
     }
 
-    private void onTextChange(final DocumentEvent event) {
-        if (this.input.getText().isEmpty()) {
-            this.setOutput();
-            return;
-        }
+    private void onTextChange() {
         try {
             String input = this.input.getText();
             Set<String> completions = this.commandExecutor.completions(ExampleExecutor.INSTANCE, input);

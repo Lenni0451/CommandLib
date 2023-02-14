@@ -32,6 +32,7 @@ public class IntegerArgumentType<E> implements ArgumentType<E, Integer> {
     private final Integer max;
 
     private IntegerArgumentType(final Integer min, final Integer max) {
+        if (min != null && max != null && min > max) throw new IllegalArgumentException("min must be smaller than max");
         this.min = min;
         this.max = max;
     }
