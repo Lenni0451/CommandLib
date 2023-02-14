@@ -1,9 +1,9 @@
 import net.lenni0451.commandlib.ArgumentChain;
 import net.lenni0451.commandlib.CommandExecutor;
+import net.lenni0451.commandlib.builder.ArgumentBuilder;
 import net.lenni0451.commandlib.exceptions.ChainExecutionException;
 import net.lenni0451.commandlib.exceptions.CommandNotFoundException;
 import net.lenni0451.commandlib.nodes.StringArgumentNode;
-import net.lenni0451.commandlib.utils.ArgumentBuilder;
 import net.lenni0451.commandlib.utils.ArgumentComparator;
 
 import java.util.Map;

@@ -1,9 +1,11 @@
-package net.lenni0451.commandlib.utils;
+package net.lenni0451.commandlib.builder;
 
 import net.lenni0451.commandlib.nodes.ListArgumentNode;
 import net.lenni0451.commandlib.nodes.StringArgumentNode;
 import net.lenni0451.commandlib.nodes.TypedArgumentNode;
 import net.lenni0451.commandlib.types.ArgumentType;
+import net.lenni0451.commandlib.types.DynamicType;
+import net.lenni0451.commandlib.utils.CompletionsProvider;
 
 import javax.annotation.Nullable;
 
@@ -31,6 +33,26 @@ public interface ArgumentBuilder<E> {
 
     default <T> ListArgumentNode<E, T> list(final String name, @Nullable final String description, final ArgumentType<E, T> type) {
         return new ListArgumentNode<>(name, description, type);
+    }
+
+    default LineBuilder<E> line() {
+        return LineBuilder.create();
+    }
+
+    default <T> ArgumentType<E, T> dynamicType(final DynamicType.SingleParser<T> parser) {
+        return new DynamicType<>(parser);
+    }
+
+    default <T> ArgumentType<E, T> dynamicType(final DynamicType.SingleParser<T> parser, final CompletionsProvider<E> completionsProvider) {
+        return new DynamicType<>(parser, completionsProvider);
+    }
+
+    default <T> ArgumentType<E, T> dynamicType(final DynamicType.BiParser<E, T> parser) {
+        return new DynamicType<>(parser);
+    }
+
+    default <T> ArgumentType<E, T> dynamicType(final DynamicType.BiParser<E, T> parser, final CompletionsProvider<E> completionsProvider) {
+        return new DynamicType<>(parser, completionsProvider);
     }
 
 }

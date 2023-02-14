@@ -1,15 +1,18 @@
 import net.lenni0451.commandlib.ArgumentChain;
 import net.lenni0451.commandlib.CommandExecutor;
+import net.lenni0451.commandlib.builder.ArgumentBuilder;
 import net.lenni0451.commandlib.exceptions.ChainExecutionException;
 import net.lenni0451.commandlib.exceptions.CommandNotFoundException;
+import net.lenni0451.commandlib.nodes.StringArgumentNode;
 import net.lenni0451.commandlib.types.IntegerArgumentType;
 import net.lenni0451.commandlib.types.StringArgumentType;
-import net.lenni0451.commandlib.utils.ArgumentBuilder;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -99,6 +102,40 @@ public class UITest extends JFrame implements ArgumentBuilder<ExampleExecutor> {
                         .then(this.string("greedy").then(this.typed("s", StringArgumentType.greedyString()).executes(c -> {
                             System.out.println("Greedy: " + c.getArgument("s"));
                         })))
+        );
+        this.commandExecutor.register(
+                this.string("line").then(this.line()
+                        .arg("test", StringArgumentType.word())
+                        .arg("test2", this.dynamicType(r -> Integer.parseInt(r.readWordOrString())))
+                        .executes(c -> {
+                            System.out.println(c.getArgument("test") + " " + c.getArgument("test2"));
+                        }))
+        );
+        this.commandExecutor.register(
+                this.string("oline").then(this.line()
+                        .arg("test", StringArgumentType.word())
+                        .arg("test2", this.dynamicType(r -> Integer.parseInt(r.readWordOrString())), 1337)
+                        .executes(c -> {
+                            System.out.println(c.getArgument("test") + " " + c.getArgument("test2"));
+                        }))
+        );
+
+        this.commandExecutor.register(
+                this.string("print").executes(() -> {
+                    try {
+                        Field chains = this.commandExecutor.getClass().getDeclaredField("chains");
+                        chains.setAccessible(true);
+                        Map<StringArgumentNode<?>, List<ArgumentChain<?>>> chainsMap = (Map<StringArgumentNode<?>, List<ArgumentChain<?>>>) chains.get(this.commandExecutor);
+                        System.out.println("-------------------------------");
+                        for (Map.Entry<StringArgumentNode<?>, List<ArgumentChain<?>>> entry : chainsMap.entrySet()) {
+                            System.out.println(entry.getKey().name());
+                            for (ArgumentChain<?> chain : entry.getValue()) System.out.println(" - " + chain);
+                        }
+                        System.out.println("-------------------------------");
+                    } catch (Throwable t) {
+                        t.printStackTrace();
+                    }
+                })
         );
     }
 
