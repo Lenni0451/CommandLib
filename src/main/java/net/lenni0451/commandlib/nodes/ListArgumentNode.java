@@ -34,8 +34,8 @@ public class ListArgumentNode<E, T> extends ArgumentNode<E, List<T>> {
         while (stringReader.canRead()) {
             result.add(this.type.parseValue(context, stringReader));
             if (stringReader.canRead()) {
-                if (stringReader.read() != ' ') throw new ArgumentParseException(this.name());
-                if (!stringReader.canRead()) throw new ArgumentParseException(this.name());
+                if (stringReader.read() != ' ') throw ArgumentParseException.namedReason(this.name(), "Expected space");
+                if (!stringReader.canRead()) throw ArgumentParseException.namedReason(this.name(), "Expected value");
             }
         }
         return result;

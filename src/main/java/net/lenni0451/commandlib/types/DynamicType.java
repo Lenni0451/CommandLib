@@ -43,7 +43,7 @@ public class DynamicType<E, T> implements ArgumentType<E, T> {
     public T parseValue(ExecutionContext<E> context, StringReader stringReader) throws ArgumentParseException, RuntimeException {
         if (this.singleParser != null) return this.singleParser.parse(stringReader);
         if (this.biParser != null) return this.biParser.parse(context, stringReader);
-        throw new RuntimeException("No parser was set");
+        throw ArgumentParseException.reason("No parser was set");
     }
 
     @Override

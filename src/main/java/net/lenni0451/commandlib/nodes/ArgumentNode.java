@@ -71,7 +71,7 @@ public abstract class ArgumentNode<E, T> {
     @Nonnull
     public T value(final ExecutionContext<E> context, final StringReader stringReader) throws ArgumentParseException, RuntimeException {
         T value = this.parseValue(context, stringReader);
-        if (this.validator != null && !this.validator.validate(value)) throw new ArgumentParseException("Invalid value '" + value + "' for argument '" + this.name + "'");
+        if (this.validator != null && !this.validator.validate(value)) throw ArgumentParseException.namedReason(this.name, "Invalid value");
         return value;
     }
 

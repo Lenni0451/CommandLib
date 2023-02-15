@@ -36,7 +36,7 @@ public class CloseChainsComparator<E> implements Comparator<Map.Entry<ArgumentCh
             case TOO_MANY_ARGUMENTS:
                 return 1;
             default:
-                throw new IllegalStateException("Unexpected reason value: " + reason);
+                throw new IllegalStateException("Unexpected reason value '" + reason + "'");
         }
     }
 

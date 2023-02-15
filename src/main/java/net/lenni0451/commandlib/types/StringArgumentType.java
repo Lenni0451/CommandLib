@@ -44,7 +44,7 @@ public class StringArgumentType<E> implements ArgumentType<E, String> {
             case GREEDY_STRING:
                 return stringReader.readRemaining();
             default:
-                throw new RuntimeException("Unknown type: " + this.type);
+                throw ArgumentParseException.reason("Unknown type '" + this.type + "'");
         }
     }
 

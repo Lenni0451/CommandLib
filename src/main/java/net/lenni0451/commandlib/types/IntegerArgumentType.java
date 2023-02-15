@@ -47,13 +47,13 @@ public class IntegerArgumentType<E> implements ArgumentType<E, Integer> {
     public Integer parseValue(ExecutionContext<E> context, StringReader stringReader) throws ArgumentParseException, RuntimeException {
         Optional<Integer> i = Util.ofThrowing(() -> Integer.parseInt(stringReader.readIntegerNumber()));
         if (!i.isPresent()) {
-            if (this.min == null && this.max == null) throw new ArgumentParseException("int");
-            else if (this.min == null) throw new ArgumentParseException("int <= " + this.max);
-            else if (this.max == null) throw new ArgumentParseException("int >= " + this.min);
-            else throw new ArgumentParseException("int >= " + this.min + " & <= " + this.max);
+            if (this.min == null && this.max == null) throw ArgumentParseException.expected("int");
+            else if (this.min == null) throw ArgumentParseException.expected("int <= " + this.max);
+            else if (this.max == null) throw ArgumentParseException.expected("int >= " + this.min);
+            else throw ArgumentParseException.expected("int >= " + this.min + " & <= " + this.max);
         }
-        if (this.min != null && i.get() < this.min) throw new ArgumentParseException("Number is too small (min: " + this.min + ")");
-        if (this.max != null && i.get() > this.max) throw new ArgumentParseException("Number is too big (max: " + this.max + ")");
+        if (this.min != null && i.get() < this.min) throw ArgumentParseException.reason("Number is too small (min: " + this.min + ")");
+        if (this.max != null && i.get() > this.max) throw ArgumentParseException.reason("Number is too big (max: " + this.max + ")");
         return i.get();
     }
 
