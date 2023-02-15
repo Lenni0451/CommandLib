@@ -5,6 +5,7 @@ import net.lenni0451.commandlib.exceptions.CommandNotFoundException;
 import net.lenni0451.commandlib.nodes.ArgumentNode;
 import net.lenni0451.commandlib.nodes.StringArgumentNode;
 import net.lenni0451.commandlib.utils.ArgumentComparator;
+import net.lenni0451.commandlib.utils.CloseChainsComparator;
 import net.lenni0451.commandlib.utils.StringReader;
 import net.lenni0451.commandlib.utils.Util;
 
@@ -95,14 +96,9 @@ public class CommandExecutor<E> {
         } catch (CommandNotFoundException e) {
             if (closeChains.isEmpty()) throw e;
 
-            ArgumentChain<E> mostLikelyChain = this.findBestChain(closeChains.keySet());
-            Map<ArgumentChain<E>, ChainExecutionException> similarChains = new HashMap<>();
-            for (ArgumentChain<E> chain : closeChains.keySet()) {
-                if (this.compareChains(mostLikelyChain, chain) == 0 && closeChains.get(mostLikelyChain).getReason().equals(closeChains.get(chain).getReason())) {
-                    similarChains.put(chain, closeChains.get(chain));
-                }
-            }
-            throw new CommandNotFoundException(e.getCommand(), Util.cast(similarChains));
+            closeChains = CloseChainsComparator.getClosest(closeChains);
+            closeChains = Util.sortMap(closeChains, (o1, o2) -> this.compareChains(o1.getKey(), o2.getKey()));
+            throw new CommandNotFoundException(e.getCommand(), Util.cast(closeChains));
         }
     }
 
@@ -124,8 +120,9 @@ public class CommandExecutor<E> {
     }
 
     private <T> T executeChain(final Map<ArgumentChain<E>, List<ArgumentChain.MatchedArgument>> chains, final ExecutionContext<E> context, final StringReader reader) throws CommandNotFoundException {
-        if (chains.isEmpty()) throw new CommandNotFoundException(reader.readWordOrString());
-        if (chains.size() == 1) {
+        if (chains.isEmpty()) {
+            throw new CommandNotFoundException(reader.readWordOrString());
+        } else if (chains.size() == 1) {
             ArgumentChain<E> chain = chains.keySet().iterator().next();
             List<ArgumentChain.MatchedArgument> arguments = chains.get(chain);
             chain.populateArguments(context, arguments);
