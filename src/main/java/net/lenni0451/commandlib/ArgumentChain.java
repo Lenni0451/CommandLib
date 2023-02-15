@@ -94,8 +94,8 @@ public class ArgumentChain<E> {
             try {
                 Object parsedArgument = argument.value(context, reader);
                 out.add(new MatchedArgument(reader.getString().substring(cursor, reader.getCursor()), parsedArgument));
-                if (!isLast && reader.canRead() && reader.read() != ' ') {
-                    throw new ChainExecutionException(ChainExecutionException.Reason.MISSING_SPACE, i, reader.getCursor(), null, reader.readRemaining());
+                if (!isLast && (!reader.canRead() || reader.read() != ' ')) {
+                    throw new ChainExecutionException(ChainExecutionException.Reason.MISSING_SPACE, i + 1, reader.getCursor(), null, reader.readRemaining());
                 }
                 if (!isLast && !reader.canRead()) {
                     String missingArguments = new ArgumentChain<>(this.arguments.subList(i + 1, this.arguments.size())).toString();

@@ -12,9 +12,6 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static net.lenni0451.commandlib.exceptions.ChainExecutionException.Reason.ARGUMENT_PARSE_EXCEPTION;
-import static net.lenni0451.commandlib.exceptions.ChainExecutionException.Reason.NO_ARGUMENTS_LEFT;
-
 public class CommandExecutor<E> {
 
     private final ArgumentComparator argumentComparator;
@@ -52,21 +49,26 @@ public class CommandExecutor<E> {
             Map<ArgumentChain<E>, ChainExecutionException> closeChains = new HashMap<>();
             Map<ArgumentChain<E>, List<ArgumentChain.MatchedArgument>> matchingChains = this.findMatchingChains(closeChains, true, context, reader);
 
-            boolean hasSpace = reader.getString().endsWith(" ");
-            if (!hasSpace) {
-                for (List<ArgumentChain.MatchedArgument> value : matchingChains.values()) {
-                    if (value.isEmpty()) continue;
-                    completions.add(value.get(value.size() - 1).getMatch());
-                }
-            }
+//            for (List<ArgumentChain.MatchedArgument> value : matchingChains.values()) {
+//                if (value.isEmpty()) continue;
+//                completions.add(value.get(value.size() - 1).getMatch());
+//            }
             for (Map.Entry<ArgumentChain<E>, ChainExecutionException> entry : closeChains.entrySet()) {
                 ArgumentChain<E> chain = entry.getKey();
                 ChainExecutionException exception = entry.getValue();
-                if (!ARGUMENT_PARSE_EXCEPTION.equals(exception.getReason()) && !NO_ARGUMENTS_LEFT.equals(exception.getReason())) continue;
+                int argOffset = 0;
+                switch (exception.getReason()) {
+                    case MISSING_SPACE:
+                        argOffset = 1;
+                    case ARGUMENT_PARSE_EXCEPTION:
+                    case NO_ARGUMENTS_LEFT:
+                        break;
+                    default:
+                        continue;
+                }
 
-                boolean goBack = !hasSpace && NO_ARGUMENTS_LEFT.equals(exception.getReason());
                 reader.setCursor(exception.getReaderCursor());
-                ArgumentNode<E, ?> argument = chain.getArgument(exception.getExecutionIndex() - (goBack ? 1 : 0));
+                ArgumentNode<E, ?> argument = chain.getArgument(exception.getExecutionIndex() - argOffset);
                 String check = reader.peekRemaining();
                 Set<String> argumentCompletions = argument.completions(context, reader);
                 for (String completion : argumentCompletions) {

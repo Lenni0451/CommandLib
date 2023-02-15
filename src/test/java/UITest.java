@@ -199,6 +199,7 @@ public class UITest extends JFrame implements ArgumentBuilder<ExampleExecutor> {
 
     private void setOutput(final String... lines) {
         this.output.setText(String.join("\n", lines));
+        this.output.setCaretPosition(0);
     }
 
     private void addOutput(final Object requiredLine, final Object... lines) {
@@ -206,6 +207,7 @@ public class UITest extends JFrame implements ArgumentBuilder<ExampleExecutor> {
         allLines[0] = this.toString(requiredLine);
         for (int i = 0; i < lines.length; i++) allLines[i + 1] = this.toString(lines[i]);
         this.output.setText(this.output.getText() + "\n" + String.join("\n", allLines));
+        this.output.setCaretPosition(0);
     }
 
     private String toString(final Object o) {
