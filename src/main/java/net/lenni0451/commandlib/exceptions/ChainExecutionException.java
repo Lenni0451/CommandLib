@@ -28,6 +28,15 @@ public class ChainExecutionException extends Exception {
         this.extraData = extraData;
     }
 
+    public ChainExecutionException(final HandledException handled, final int executionIndex, final int readerCursor, @Nullable final String argumentName, @Nullable final String extraData) {
+        super(handled.getCause());
+        this.reason = Reason.HANDLED_OTHERWISE;
+        this.executionIndex = executionIndex;
+        this.readerCursor = readerCursor;
+        this.argumentName = argumentName;
+        this.extraData = extraData;
+    }
+
     public ChainExecutionException(final Reason reason, final int executionIndex, final int readerCursor, @Nullable final String argumentName, @Nullable final String extraData) {
         this.reason = reason;
         this.executionIndex = executionIndex;
@@ -60,7 +69,7 @@ public class ChainExecutionException extends Exception {
 
 
     public enum Reason {
-        ARGUMENT_PARSE_EXCEPTION, RUNTIME_EXCEPTION, MISSING_SPACE, NO_ARGUMENTS_LEFT, TOO_MANY_ARGUMENTS
+        HANDLED_OTHERWISE, ARGUMENT_PARSE_EXCEPTION, RUNTIME_EXCEPTION, MISSING_SPACE, NO_ARGUMENTS_LEFT, TOO_MANY_ARGUMENTS
     }
 
 }

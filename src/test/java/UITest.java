@@ -124,6 +124,12 @@ public class UITest extends JFrame implements ArgumentBuilder<ExampleExecutor> {
                             System.out.println("Val: " + c.getArgument("val"));
                         }))
         );
+        this.commandExecutor.register(
+                this.string("custom_exception")
+                        .then(this.string("callme")
+                                .executes(() -> System.out.println("Called me"))
+                                .exceptionHandler((executor, t) -> System.out.println("wrong")))
+        );
 
         this.commandExecutor.register(
                 this.string("print").executes(() -> {

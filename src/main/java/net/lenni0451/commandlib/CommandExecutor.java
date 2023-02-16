@@ -46,7 +46,7 @@ public class CommandExecutor<E> {
         if (!reader.canRead()) {
             completions.addAll(this.chains.keySet().stream().map(StringArgumentNode::name).collect(Collectors.toList()));
         } else {
-            ExecutionContext<E> context = new ExecutionContext<>(this.argumentComparator, executor);
+            ExecutionContext<E> context = new ExecutionContext<>(this.argumentComparator, executor, false);
             Map<ArgumentChain<E>, ChainExecutionException> closeChains = new HashMap<>();
             Map<ArgumentChain<E>, List<ArgumentChain.MatchedArgument>> matchingChains = this.findMatchingChains(closeChains, true, context, reader);
 
@@ -88,7 +88,7 @@ public class CommandExecutor<E> {
     @Nullable
     public <T> T execute(final E executor, final StringReader reader) throws CommandNotFoundException {
         if (!reader.canRead()) throw new CommandNotFoundException("<none>");
-        ExecutionContext<E> context = new ExecutionContext<>(this.argumentComparator, executor);
+        ExecutionContext<E> context = new ExecutionContext<>(this.argumentComparator, executor, true);
         Map<ArgumentChain<E>, ChainExecutionException> closeChains = new HashMap<>();
         Map<ArgumentChain<E>, List<ArgumentChain.MatchedArgument>> matchingChains = this.findMatchingChains(closeChains, false, context, reader);
         try {

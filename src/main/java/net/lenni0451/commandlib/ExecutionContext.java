@@ -11,11 +11,13 @@ public class ExecutionContext<E> {
     private final ArgumentComparator argumentComparator;
     private final E executor;
     private final Map<String, Object> arguments;
+    private final boolean isExecution;
 
-    public ExecutionContext(final ArgumentComparator argumentComparator, final E executor) {
+    public ExecutionContext(final ArgumentComparator argumentComparator, final E executor, final boolean isExecution) {
         this.argumentComparator = argumentComparator;
         this.executor = executor;
         this.arguments = new HashMap<>();
+        this.isExecution = isExecution;
     }
 
     public ArgumentComparator getArgumentComparator() {
@@ -38,6 +40,10 @@ public class ExecutionContext<E> {
 
     public void addArgument(final String name, final Object value) {
         this.arguments.put(name, value);
+    }
+
+    public boolean isExecution() {
+        return this.isExecution;
     }
 
 }

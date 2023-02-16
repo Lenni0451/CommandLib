@@ -2,6 +2,7 @@ package net.lenni0451.commandlib;
 
 import net.lenni0451.commandlib.exceptions.ArgumentParseException;
 import net.lenni0451.commandlib.exceptions.ChainExecutionException;
+import net.lenni0451.commandlib.exceptions.HandledException;
 import net.lenni0451.commandlib.nodes.ArgumentNode;
 import net.lenni0451.commandlib.utils.StringReader;
 
@@ -103,6 +104,8 @@ public class ArgumentChain<E> {
                 } else if (isLast && reader.canRead()) {
                     throw new ChainExecutionException(ChainExecutionException.Reason.TOO_MANY_ARGUMENTS, i, reader.getCursor(), null, reader.readRemaining());
                 }
+            } catch (HandledException e) {
+                throw new ChainExecutionException(e, i, cursor, argument.name(), reader.getString().substring(cursor, reader.getCursor()));
             } catch (ArgumentParseException e) {
                 throw new ChainExecutionException(e, i, cursor, argument.name(), reader.getString().substring(cursor, reader.getCursor()));
             } catch (RuntimeException e) {

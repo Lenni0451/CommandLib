@@ -2,7 +2,9 @@ package net.lenni0451.commandlib.nodes;
 
 import net.lenni0451.commandlib.ExecutionContext;
 import net.lenni0451.commandlib.exceptions.ArgumentParseException;
+import net.lenni0451.commandlib.exceptions.HandledException;
 import net.lenni0451.commandlib.utils.StringReader;
+import net.lenni0451.commandlib.utils.interfaces.CommandExceptionHandler;
 import net.lenni0451.commandlib.utils.interfaces.CompletionsProvider;
 import net.lenni0451.commandlib.utils.interfaces.ValueValidator;
 
@@ -25,6 +27,7 @@ public abstract class ArgumentNode<E, T> {
     protected boolean providesArgument = true;
     private ValueValidator<T> validator;
     private CompletionsProvider<E> completionsProvider;
+    private CommandExceptionHandler<E> exceptionHandler;
     private Function<ExecutionContext<E>, ?> executor;
 
     public ArgumentNode(final String name) {
@@ -70,7 +73,16 @@ public abstract class ArgumentNode<E, T> {
 
     @Nonnull
     public T value(final ExecutionContext<E> context, final StringReader stringReader) throws ArgumentParseException, RuntimeException {
-        T value = this.parseValue(context, stringReader);
+        T value;
+        try {
+            value = this.parseValue(context, stringReader);
+        } catch (ArgumentParseException | RuntimeException e) {
+            if (this.exceptionHandler != null && context.isExecution()) {
+                this.exceptionHandler.handle(context, e);
+                throw new HandledException(e);
+            }
+            throw e;
+        }
         if (this.validator != null && !this.validator.validate(value)) throw ArgumentParseException.namedReason(this.name, "Invalid value");
         return value;
     }
@@ -99,6 +111,11 @@ public abstract class ArgumentNode<E, T> {
 
     public ArgumentNode<E, T> suggestions(@Nullable final CompletionsProvider<E> completionsProvider) {
         this.completionsProvider = completionsProvider;
+        return this;
+    }
+
+    public ArgumentNode<E, T> exceptionHandler(@Nullable final CommandExceptionHandler<E> exceptionHandler) {
+        this.exceptionHandler = exceptionHandler;
         return this;
     }
 
