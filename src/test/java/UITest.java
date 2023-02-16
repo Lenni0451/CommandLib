@@ -114,7 +114,7 @@ public class UITest extends JFrame implements ArgumentBuilder<ExampleExecutor> {
                 }));
         this.register("oline", line -> line
                 .arg("arg1", StringArgumentType.word())
-                .arg("arg2", this.dynamicType(r -> Integer.parseInt(r.readWordOrString())), 1337)
+                .arg("arg2", this.dynamicType(r -> Integer.parseInt(r.readWordOrString()))).defaultValue(1337)
                 .executes(c -> {
                     System.out.println(c.getArgument("arg1") + " " + c.getArgument("arg2"));
                 }));

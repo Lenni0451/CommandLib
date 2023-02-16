@@ -5,6 +5,7 @@ import net.lenni0451.commandlib.nodes.ArgumentNode;
 import net.lenni0451.commandlib.nodes.TypedArgumentNode;
 import net.lenni0451.commandlib.types.ArgumentType;
 import net.lenni0451.commandlib.utils.Util;
+import net.lenni0451.commandlib.utils.interfaces.CommandExceptionHandler;
 import net.lenni0451.commandlib.utils.interfaces.CompletionsProvider;
 import net.lenni0451.commandlib.utils.interfaces.ValueValidator;
 
@@ -29,52 +30,32 @@ public class LineBuilder<E> {
     }
 
     public <T> LineBuilder<E> arg(final String name, final ArgumentType<E, T> type) {
-        this.nodes.add(new LineNode<>(name, null, type, null, null, null));
+        this.nodes.add(new LineNode<>(name, null, type));
         return this;
     }
 
     public <T> LineBuilder<E> arg(final String name, final String description, final ArgumentType<E, T> type) {
-        this.nodes.add(new LineNode<>(name, description, type, null, null, null));
+        this.nodes.add(new LineNode<>(name, description, type));
         return this;
     }
 
-    public <T> LineBuilder<E> arg(final String name, final ArgumentType<E, T> type, final CompletionsProvider<E> completionsProvider) {
-        this.nodes.add(new LineNode<>(name, null, type, completionsProvider, null, null));
+    public <T> LineBuilder<E> validator(@Nullable final ValueValidator<T> validator) {
+        this.nodes.get(this.nodes.size() - 1).validator = Util.cast(validator);
         return this;
     }
 
-    public <T> LineBuilder<E> arg(final String name, final String description, final ArgumentType<E, T> type, final CompletionsProvider<E> completionsProvider) {
-        this.nodes.add(new LineNode<>(name, description, type, completionsProvider, null, null));
+    public LineBuilder<E> suggestions(@Nullable final CompletionsProvider<E> completionsProvider) {
+        this.nodes.get(this.nodes.size() - 1).completionsProvider = completionsProvider;
         return this;
     }
 
-    public <T> LineBuilder<E> arg(final String name, final ArgumentType<E, T> type, final ValueValidator<T> validator) {
-        this.nodes.add(new LineNode<>(name, null, type, null, validator, null));
+    public LineBuilder<E> exceptionHandler(@Nullable final CommandExceptionHandler<E> exceptionHandler) {
+        this.nodes.get(this.nodes.size() - 1).exceptionHandler = exceptionHandler;
         return this;
     }
 
-    public <T> LineBuilder<E> arg(final String name, final String description, final ArgumentType<E, T> type, final ValueValidator<T> validator) {
-        this.nodes.add(new LineNode<>(name, description, type, null, validator, null));
-        return this;
-    }
-
-    public <T> LineBuilder<E> arg(final String name, final ArgumentType<E, T> type, final T defaultValue) {
-        this.nodes.add(new LineNode<>(name, null, type, null, null, defaultValue));
-        return this;
-    }
-
-    public <T> LineBuilder<E> arg(final String name, final String description, final ArgumentType<E, T> type, final T defaultValue) {
-        this.nodes.add(new LineNode<>(name, description, type, null, null, defaultValue));
-        return this;
-    }
-
-    public <T> LineBuilder<E> arg(final String name, final ArgumentType<E, T> type, final CompletionsProvider<E> completionsProvider, @Nullable final ValueValidator<T> validator, final T defaultValue) {
-        this.nodes.add(new LineNode<>(name, null, type, completionsProvider, validator, defaultValue));
-        return this;
-    }
-
-    public <T> LineBuilder<E> arg(final String name, final String description, final ArgumentType<E, T> type, final CompletionsProvider<E> completionsProvider, @Nullable final ValueValidator<T> validator, final T defaultValue) {
-        this.nodes.add(new LineNode<>(name, description, type, completionsProvider, validator, defaultValue));
+    public <T> LineBuilder<E> defaultValue(@Nullable final T defaultValue) {
+        this.nodes.get(this.nodes.size() - 1).defaultValue = Util.cast(defaultValue);
         return this;
     }
 
@@ -126,24 +107,23 @@ public class LineBuilder<E> {
         private final String name;
         private final String description;
         private final ArgumentType<E, T> type;
-        private final CompletionsProvider<E> completionsProvider;
-        private final ValueValidator<T> validator;
-        private final T defaultValue;
+        private ValueValidator<T> validator;
+        private CompletionsProvider<E> completionsProvider;
+        private CommandExceptionHandler<E> exceptionHandler;
+        private T defaultValue;
 
-        private LineNode(final String name, @Nullable final String description, final ArgumentType<E, T> argumentType, @Nullable final CompletionsProvider<E> completionsProvider, @Nullable final ValueValidator<T> validator, @Nullable final T defaultValue) {
+        private LineNode(final String name, @Nullable final String description, final ArgumentType<E, T> argumentType) {
             this.name = name;
             this.description = description;
             this.type = argumentType;
-            this.completionsProvider = completionsProvider;
-            this.validator = validator;
-            this.defaultValue = defaultValue;
         }
 
         private TypedArgumentNode<E, T> toArgumentNode() {
             TypedArgumentNode<E, T> node = new TypedArgumentNode<>(this.name, this.description, this.type);
             node
+                    .validator(this.validator)
                     .suggestions(this.completionsProvider)
-                    .validator(this.validator);
+                    .exceptionHandler(this.exceptionHandler);
             return node;
         }
     }
