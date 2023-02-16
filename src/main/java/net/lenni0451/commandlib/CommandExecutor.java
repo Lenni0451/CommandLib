@@ -108,7 +108,7 @@ public class CommandExecutor<E> {
             for (ArgumentChain<E> chain : chains) {
                 int cursor = reader.getCursor();
                 try {
-                    List<ArgumentChain.MatchedArgument> arguments = chain.execute(context, reader);
+                    List<ArgumentChain.MatchedArgument> arguments = chain.parse(context, reader);
                     out.put(chain, arguments);
                 } catch (ChainExecutionException e) {
                     if (e.getExecutionIndex() != 0 || closeMatchLiteral) closeChains.put(chain, e);

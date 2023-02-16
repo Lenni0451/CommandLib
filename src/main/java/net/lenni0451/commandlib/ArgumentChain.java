@@ -85,7 +85,7 @@ public class ArgumentChain<E> {
         return this.arguments.get(index);
     }
 
-    public List<MatchedArgument> execute(final ExecutionContext<E> context, final StringReader reader) throws ChainExecutionException {
+    public List<MatchedArgument> parse(final ExecutionContext<E> context, final StringReader reader) throws ChainExecutionException {
         List<MatchedArgument> out = new ArrayList<>();
         for (int i = 0; i < this.arguments.size(); i++) {
             int cursor = reader.getCursor();
