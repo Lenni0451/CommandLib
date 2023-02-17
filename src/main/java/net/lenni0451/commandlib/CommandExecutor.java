@@ -77,7 +77,14 @@ public class CommandExecutor<E> {
                 }
             }
         }
-        return completions.stream().sorted().collect(Collectors.toCollection(LinkedHashSet::new));
+        return completions
+                .stream()
+                .sorted()
+                .map(s -> {
+                    if (s.contains(" ")) return "\"" + s.replace("\\", "\\\\").replace("\"", "\\\"") + "\"";
+                    else return s;
+                })
+                .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     @Nullable
