@@ -31,10 +31,10 @@ public class ListArgumentNode<E, T> extends ArgumentNode<E, List<T>> {
 
     @Nonnull
     @Override
-    public List<T> parseValue(ExecutionContext<E> context, StringReader stringReader) throws ArgumentParseException, RuntimeException {
+    public List<T> parseValue(ExecutionContext<E> executionContext, StringReader stringReader) throws ArgumentParseException, RuntimeException {
         List<T> result = new ArrayList<>();
         while (stringReader.canRead()) {
-            result.add(this.type.parseValue(context, stringReader));
+            result.add(this.type.parseValue(executionContext, stringReader));
             if (stringReader.canRead()) {
                 if (stringReader.read() != ' ') throw ArgumentParseException.namedReason(this.name(), "Expected space");
                 if (!stringReader.canRead()) throw ArgumentParseException.namedReason(this.name(), "Expected value");

@@ -35,7 +35,7 @@ public class StringArgumentType<E> implements ArgumentType<E, String> {
 
     @Nonnull
     @Override
-    public String parseValue(ExecutionContext<E> context, StringReader stringReader) throws ArgumentParseException, RuntimeException {
+    public String parseValue(ExecutionContext<E> executionContext, StringReader stringReader) throws ArgumentParseException, RuntimeException {
         switch (this.type) {
             case WORD:
                 return stringReader.readWord();
@@ -49,7 +49,7 @@ public class StringArgumentType<E> implements ArgumentType<E, String> {
     }
 
     @Override
-    public void parseCompletions(Set<String> completions, ExecutionContext<E> context, StringReader stringReader) {
+    public void parseCompletions(Set<String> completions, ExecutionContext<E> executionContext, StringReader stringReader) {
     }
 
 

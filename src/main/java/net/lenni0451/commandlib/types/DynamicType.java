@@ -40,15 +40,15 @@ public class DynamicType<E, T> implements ArgumentType<E, T> {
 
     @Nonnull
     @Override
-    public T parseValue(ExecutionContext<E> context, StringReader stringReader) throws ArgumentParseException, RuntimeException {
+    public T parseValue(ExecutionContext<E> executionContext, StringReader stringReader) throws ArgumentParseException, RuntimeException {
         if (this.singleParser != null) return this.singleParser.parse(stringReader);
-        if (this.biParser != null) return this.biParser.parse(context, stringReader);
+        if (this.biParser != null) return this.biParser.parse(executionContext, stringReader);
         throw ArgumentParseException.reason("No parser was set");
     }
 
     @Override
-    public void parseCompletions(Set<String> completions, ExecutionContext<E> context, StringReader stringReader) {
-        if (this.completionsProvider != null) this.completionsProvider.provide(completions, context, stringReader);
+    public void parseCompletions(Set<String> completions, ExecutionContext<E> executionContext, StringReader stringReader) {
+        if (this.completionsProvider != null) this.completionsProvider.provide(completions, executionContext, stringReader);
     }
 
 
@@ -59,7 +59,7 @@ public class DynamicType<E, T> implements ArgumentType<E, T> {
 
     @FunctionalInterface
     public interface BiParser<E, T> {
-        T parse(final ExecutionContext<E> context, final StringReader stringReader) throws ArgumentParseException, RuntimeException;
+        T parse(final ExecutionContext<E> executionContext, final StringReader stringReader) throws ArgumentParseException, RuntimeException;
     }
 
 }

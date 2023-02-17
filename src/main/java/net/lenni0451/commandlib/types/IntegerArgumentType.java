@@ -44,7 +44,7 @@ public class IntegerArgumentType<E> implements ArgumentType<E, Integer> {
 
     @Nonnull
     @Override
-    public Integer parseValue(ExecutionContext<E> context, StringReader stringReader) throws ArgumentParseException, RuntimeException {
+    public Integer parseValue(ExecutionContext<E> executionContext, StringReader stringReader) throws ArgumentParseException, RuntimeException {
         Optional<Integer> i = Util.ofThrowing(() -> Integer.parseInt(stringReader.readIntegerNumber()));
         if (!i.isPresent()) {
             if (this.min == null && this.max == null) throw ArgumentParseException.expected("int");
@@ -58,7 +58,7 @@ public class IntegerArgumentType<E> implements ArgumentType<E, Integer> {
     }
 
     @Override
-    public void parseCompletions(Set<String> completions, ExecutionContext<E> context, StringReader stringReader) {
+    public void parseCompletions(Set<String> completions, ExecutionContext<E> executionContext, StringReader stringReader) {
         Optional<Integer> number = Util.ofThrowing(() -> Integer.valueOf(stringReader.readIntegerNumber()));
         if (number.isPresent()) {
             if (this.min != null && number.get() < this.min) return;

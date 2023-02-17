@@ -87,14 +87,14 @@ public class ArgumentChain<E> {
         return this.arguments.get(index);
     }
 
-    public List<MatchedArgument> parse(final ExecutionContext<E> context, final StringReader reader) throws ChainExecutionException {
+    public List<MatchedArgument> parse(final ExecutionContext<E> executionContext, final StringReader reader) throws ChainExecutionException {
         List<MatchedArgument> out = new ArrayList<>();
         for (int i = 0; i < this.arguments.size(); i++) {
             int cursor = reader.getCursor();
             ArgumentNode<E, ?> argument = this.arguments.get(i);
             boolean isLast = i == this.arguments.size() - 1;
             try {
-                Object parsedArgument = argument.value(context, reader);
+                Object parsedArgument = argument.value(executionContext, reader);
                 out.add(new MatchedArgument(reader.getString().substring(cursor, reader.getCursor()), parsedArgument));
                 if (!isLast && (!reader.canRead() || reader.read() != ' ')) {
                     throw new ChainExecutionException(ChainExecutionException.Reason.MISSING_SPACE, i + 1, reader.getCursor(), null, reader.readRemaining());
@@ -116,11 +116,11 @@ public class ArgumentChain<E> {
         return out;
     }
 
-    public void populateArguments(final ExecutionContext<E> context, final List<ArgumentChain.MatchedArgument> arguments) {
+    public void populateArguments(final ExecutionContext<E> executionContext, final List<ArgumentChain.MatchedArgument> arguments) {
         for (int i = 0; i < this.arguments.size(); i++) {
             ArgumentNode<E, ?> argumentNode = this.arguments.get(i);
             if (!argumentNode.providesArgument()) continue;
-            context.addArgument(argumentNode.name(), arguments.get(i).getValue());
+            executionContext.addArgument(argumentNode.name(), arguments.get(i).getValue());
         }
     }
 

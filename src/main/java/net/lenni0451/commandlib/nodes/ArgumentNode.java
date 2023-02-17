@@ -73,13 +73,13 @@ public abstract class ArgumentNode<E, T> {
     }
 
     @Nonnull
-    public T value(final ExecutionContext<E> context, final StringReader stringReader) throws ArgumentParseException, RuntimeException {
+    public T value(final ExecutionContext<E> executionContext, final StringReader stringReader) throws ArgumentParseException, RuntimeException {
         T value;
         try {
-            value = this.parseValue(context, stringReader);
+            value = this.parseValue(executionContext, stringReader);
         } catch (ArgumentParseException | RuntimeException e) {
-            if (this.exceptionHandler != null && context.isExecution()) {
-                this.exceptionHandler.handle(context, e);
+            if (this.exceptionHandler != null && executionContext.isExecution()) {
+                this.exceptionHandler.handle(executionContext, e);
                 throw new HandledException(e);
             }
             throw e;
@@ -96,7 +96,7 @@ public abstract class ArgumentNode<E, T> {
     }
 
     @Nonnull
-    protected abstract T parseValue(final ExecutionContext<E> context, final StringReader stringReader) throws ArgumentParseException, RuntimeException;
+    protected abstract T parseValue(final ExecutionContext<E> executionContext, final StringReader stringReader) throws ArgumentParseException, RuntimeException;
 
     protected abstract void parseCompletions(final Set<String> completions, final CompletionContext completionContext, final ExecutionContext<E> executionContext, final StringReader stringReader);
 
@@ -121,7 +121,7 @@ public abstract class ArgumentNode<E, T> {
     }
 
     public ArgumentNode<E, T> executes(final Runnable runnable) {
-        this.executor = context -> {
+        this.executor = executionContext -> {
             runnable.run();
             return null;
         };
@@ -129,15 +129,15 @@ public abstract class ArgumentNode<E, T> {
     }
 
     public ArgumentNode<E, T> executes(final Consumer<ExecutionContext<E>> consumer) {
-        this.executor = context -> {
-            consumer.accept(context);
+        this.executor = executionContext -> {
+            consumer.accept(executionContext);
             return null;
         };
         return this;
     }
 
     public ArgumentNode<E, T> executes(final Supplier<?> supplier) {
-        this.executor = context -> supplier.get();
+        this.executor = executionContext -> supplier.get();
         return this;
     }
 

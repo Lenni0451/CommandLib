@@ -28,8 +28,8 @@ public class TypedArgumentNode<E, T> extends ArgumentNode<E, T> {
 
     @Nonnull
     @Override
-    public T parseValue(ExecutionContext<E> context, StringReader stringReader) throws ArgumentParseException, RuntimeException {
-        return this.type.parseValue(context, stringReader);
+    public T parseValue(ExecutionContext<E> executionContext, StringReader stringReader) throws ArgumentParseException, RuntimeException {
+        return this.type.parseValue(executionContext, stringReader);
     }
 
     @Override

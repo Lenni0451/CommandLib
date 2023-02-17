@@ -14,9 +14,9 @@ public interface ArgumentType<E, T> {
     }
 
     @Nonnull
-    T parseValue(final ExecutionContext<E> context, final StringReader stringReader) throws ArgumentParseException, RuntimeException;
+    T parseValue(final ExecutionContext<E> executionContext, final StringReader stringReader) throws ArgumentParseException, RuntimeException;
 
-    default void parseCompletions(final Set<String> completions, final ExecutionContext<E> context, final StringReader stringReader) {
+    default void parseCompletions(final Set<String> completions, final ExecutionContext<E> executionContext, final StringReader stringReader) {
     }
 
 }

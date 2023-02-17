@@ -8,6 +8,6 @@ import java.util.Set;
 @FunctionalInterface
 public interface CompletionsProvider<E> {
 
-    void provide(final Set<String> completions, final ExecutionContext<E> context, final StringReader stringReader);
+    void provide(final Set<String> completions, final ExecutionContext<E> executionContext, final StringReader stringReader);
 
 }
