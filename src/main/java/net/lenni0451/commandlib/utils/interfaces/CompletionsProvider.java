@@ -1,6 +1,6 @@
 package net.lenni0451.commandlib.utils.interfaces;
 
-import net.lenni0451.commandlib.ExecutionContext;
+import net.lenni0451.commandlib.contexts.ExecutionContext;
 import net.lenni0451.commandlib.utils.StringReader;
 
 import java.util.Set;

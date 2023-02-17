@@ -1,6 +1,6 @@
 package net.lenni0451.commandlib.builder;
 
-import net.lenni0451.commandlib.ExecutionContext;
+import net.lenni0451.commandlib.contexts.ExecutionContext;
 import net.lenni0451.commandlib.nodes.ArgumentNode;
 import net.lenni0451.commandlib.nodes.TypedArgumentNode;
 import net.lenni0451.commandlib.types.ArgumentType;

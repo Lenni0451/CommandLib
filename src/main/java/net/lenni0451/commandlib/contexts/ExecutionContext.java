@@ -1,4 +1,4 @@
-package net.lenni0451.commandlib;
+package net.lenni0451.commandlib.contexts;
 
 import net.lenni0451.commandlib.utils.ArgumentComparator;
 

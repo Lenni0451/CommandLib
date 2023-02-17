@@ -1,5 +1,7 @@
 package net.lenni0451.commandlib;
 
+import net.lenni0451.commandlib.contexts.CompletionContext;
+import net.lenni0451.commandlib.contexts.ExecutionContext;
 import net.lenni0451.commandlib.exceptions.ChainExecutionException;
 import net.lenni0451.commandlib.exceptions.CommandNotFoundException;
 import net.lenni0451.commandlib.nodes.ArgumentNode;
@@ -46,9 +48,9 @@ public class CommandExecutor<E> {
         if (!reader.canRead()) {
             completions.addAll(this.chains.keySet().stream().map(StringArgumentNode::name).collect(Collectors.toList()));
         } else {
-            ExecutionContext<E> context = new ExecutionContext<>(this.argumentComparator, executor, false);
+            ExecutionContext<E> executionContext = new ExecutionContext<>(this.argumentComparator, executor, false);
             Map<ArgumentChain<E>, ChainExecutionException> closeChains = new HashMap<>();
-            Map<ArgumentChain<E>, List<ArgumentChain.MatchedArgument>> matchingChains = this.findMatchingChains(closeChains, true, context, reader);
+            Map<ArgumentChain<E>, List<ArgumentChain.MatchedArgument>> matchingChains = this.findMatchingChains(closeChains, true, executionContext, reader);
 
 //            for (List<ArgumentChain.MatchedArgument> value : matchingChains.values()) {
 //                if (value.isEmpty()) continue;
@@ -60,12 +62,13 @@ public class CommandExecutor<E> {
                 int argOffset = 0;
                 if (ChainExecutionException.Reason.MISSING_SPACE.equals(exception.getReason())) argOffset = 1;
 
+                CompletionContext completionContext = new CompletionContext();
                 reader.setCursor(exception.getReaderCursor());
                 ArgumentNode<E, ?> argument = chain.getArgument(exception.getExecutionIndex() - argOffset);
                 String check = reader.peekRemaining();
-                Set<String> argumentCompletions = argument.completions(context, reader);
+                Set<String> argumentCompletions = argument.completions(completionContext, executionContext, reader);
                 for (String completion : argumentCompletions) {
-                    if (this.argumentComparator.startsWith(completion, check)) completions.add(completion);
+                    if (this.argumentComparator.startsWith(completion, check)) completions.add(completion.substring(completionContext.getCompletionsTrim()));
                 }
             }
         }
@@ -87,11 +90,11 @@ public class CommandExecutor<E> {
     @Nullable
     public <T> T execute(final E executor, final StringReader reader) throws CommandNotFoundException {
         if (!reader.canRead()) throw new CommandNotFoundException("<none>");
-        ExecutionContext<E> context = new ExecutionContext<>(this.argumentComparator, executor, true);
+        ExecutionContext<E> executionContext = new ExecutionContext<>(this.argumentComparator, executor, true);
         Map<ArgumentChain<E>, ChainExecutionException> closeChains = new HashMap<>();
-        Map<ArgumentChain<E>, List<ArgumentChain.MatchedArgument>> matchingChains = this.findMatchingChains(closeChains, false, context, reader);
+        Map<ArgumentChain<E>, List<ArgumentChain.MatchedArgument>> matchingChains = this.findMatchingChains(closeChains, false, executionContext, reader);
         try {
-            return this.executeChain(matchingChains, context, reader);
+            return this.executeChain(matchingChains, executionContext, reader);
         } catch (CommandNotFoundException e) {
             if (closeChains.isEmpty()) throw e;
 
@@ -101,13 +104,13 @@ public class CommandExecutor<E> {
         }
     }
 
-    private Map<ArgumentChain<E>, List<ArgumentChain.MatchedArgument>> findMatchingChains(final Map<ArgumentChain<E>, ChainExecutionException> closeChains, final boolean closeMatchLiteral, final ExecutionContext<E> context, final StringReader reader) {
+    private Map<ArgumentChain<E>, List<ArgumentChain.MatchedArgument>> findMatchingChains(final Map<ArgumentChain<E>, ChainExecutionException> closeChains, final boolean closeMatchLiteral, final ExecutionContext<E> executionContext, final StringReader reader) {
         Map<ArgumentChain<E>, List<ArgumentChain.MatchedArgument>> out = new HashMap<>();
         for (List<ArgumentChain<E>> chains : this.chains.values()) {
             for (ArgumentChain<E> chain : chains) {
                 int cursor = reader.getCursor();
                 try {
-                    List<ArgumentChain.MatchedArgument> arguments = chain.parse(context, reader);
+                    List<ArgumentChain.MatchedArgument> arguments = chain.parse(executionContext, reader);
                     out.put(chain, arguments);
                 } catch (ChainExecutionException e) {
                     if (e.getExecutionIndex() != 0 || closeMatchLiteral) closeChains.put(chain, e);
@@ -118,19 +121,19 @@ public class CommandExecutor<E> {
         return out;
     }
 
-    private <T> T executeChain(final Map<ArgumentChain<E>, List<ArgumentChain.MatchedArgument>> chains, final ExecutionContext<E> context, final StringReader reader) throws CommandNotFoundException {
+    private <T> T executeChain(final Map<ArgumentChain<E>, List<ArgumentChain.MatchedArgument>> chains, final ExecutionContext<E> executionContext, final StringReader reader) throws CommandNotFoundException {
         if (chains.isEmpty()) {
             throw new CommandNotFoundException(reader.readWordOrString());
         } else if (chains.size() == 1) {
             ArgumentChain<E> chain = chains.keySet().iterator().next();
             List<ArgumentChain.MatchedArgument> arguments = chains.get(chain);
-            chain.populateArguments(context, arguments);
-            return (T) chain.getExecutor().apply(context);
+            chain.populateArguments(executionContext, arguments);
+            return (T) chain.getExecutor().apply(executionContext);
         } else {
             Map<ArgumentChain<E>, List<ArgumentChain.MatchedArgument>> bestChainMap = new HashMap<>();
             ArgumentChain<E> bestChain = this.findBestChain(chains.keySet());
             bestChainMap.put(bestChain, chains.get(bestChain));
-            return this.executeChain(bestChainMap, context, reader);
+            return this.executeChain(bestChainMap, executionContext, reader);
         }
     }
 

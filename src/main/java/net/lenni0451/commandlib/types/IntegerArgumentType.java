@@ -1,6 +1,6 @@
 package net.lenni0451.commandlib.types;
 
-import net.lenni0451.commandlib.ExecutionContext;
+import net.lenni0451.commandlib.contexts.ExecutionContext;
 import net.lenni0451.commandlib.exceptions.ArgumentParseException;
 import net.lenni0451.commandlib.utils.StringReader;
 import net.lenni0451.commandlib.utils.Util;

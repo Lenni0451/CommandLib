@@ -1,6 +1,7 @@
 package net.lenni0451.commandlib.nodes;
 
-import net.lenni0451.commandlib.ExecutionContext;
+import net.lenni0451.commandlib.contexts.CompletionContext;
+import net.lenni0451.commandlib.contexts.ExecutionContext;
 import net.lenni0451.commandlib.exceptions.ArgumentParseException;
 import net.lenni0451.commandlib.types.ArgumentType;
 import net.lenni0451.commandlib.utils.StringReader;
@@ -32,8 +33,8 @@ public class TypedArgumentNode<E, T> extends ArgumentNode<E, T> {
     }
 
     @Override
-    public void parseCompletions(Set<String> completions, ExecutionContext<E> context, StringReader stringReader) {
-        this.type.parseCompletions(completions, context, stringReader);
+    public void parseCompletions(Set<String> completions, CompletionContext completionContext, ExecutionContext<E> executionContext, StringReader stringReader) {
+        this.type.parseCompletions(completions, executionContext, stringReader);
     }
 
 }

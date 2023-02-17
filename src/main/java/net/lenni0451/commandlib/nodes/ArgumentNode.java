@@ -1,6 +1,7 @@
 package net.lenni0451.commandlib.nodes;
 
-import net.lenni0451.commandlib.ExecutionContext;
+import net.lenni0451.commandlib.contexts.CompletionContext;
+import net.lenni0451.commandlib.contexts.ExecutionContext;
 import net.lenni0451.commandlib.exceptions.ArgumentParseException;
 import net.lenni0451.commandlib.exceptions.HandledException;
 import net.lenni0451.commandlib.utils.StringReader;
@@ -87,17 +88,17 @@ public abstract class ArgumentNode<E, T> {
         return value;
     }
 
-    public Set<String> completions(final ExecutionContext<E> context, final StringReader reader) {
+    public Set<String> completions(final CompletionContext completionContext, final ExecutionContext<E> executionContext, final StringReader reader) {
         Set<String> completions = new HashSet<>();
-        if (this.completionsProvider != null) this.completionsProvider.provide(completions, context, reader);
-        else this.parseCompletions(completions, context, reader);
+        if (this.completionsProvider != null) this.completionsProvider.provide(completions, executionContext, reader);
+        else this.parseCompletions(completions, completionContext, executionContext, reader);
         return completions;
     }
 
     @Nonnull
     protected abstract T parseValue(final ExecutionContext<E> context, final StringReader stringReader) throws ArgumentParseException, RuntimeException;
 
-    protected abstract void parseCompletions(final Set<String> completions, final ExecutionContext<E> context, final StringReader stringReader);
+    protected abstract void parseCompletions(final Set<String> completions, final CompletionContext completionContext, final ExecutionContext<E> executionContext, final StringReader stringReader);
 
     public ArgumentNode<E, T> then(final ArgumentNode<E, ?> child) {
         this.children.add(child);

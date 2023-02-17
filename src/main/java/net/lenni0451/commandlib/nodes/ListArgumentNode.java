@@ -1,6 +1,7 @@
 package net.lenni0451.commandlib.nodes;
 
-import net.lenni0451.commandlib.ExecutionContext;
+import net.lenni0451.commandlib.contexts.CompletionContext;
+import net.lenni0451.commandlib.contexts.ExecutionContext;
 import net.lenni0451.commandlib.exceptions.ArgumentParseException;
 import net.lenni0451.commandlib.types.ArgumentType;
 import net.lenni0451.commandlib.utils.StringReader;
@@ -8,6 +9,7 @@ import net.lenni0451.commandlib.utils.StringReader;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -42,8 +44,16 @@ public class ListArgumentNode<E, T> extends ArgumentNode<E, List<T>> {
     }
 
     @Override
-    public void parseCompletions(Set<String> completions, ExecutionContext<E> context, StringReader stringReader) {
-        this.type.parseCompletions(completions, context, stringReader);
+    public void parseCompletions(Set<String> completions, CompletionContext completionContext, ExecutionContext<E> executionContext, StringReader stringReader) {
+        String remaining = stringReader.peekRemaining();
+        if (remaining.isEmpty() || remaining.endsWith(" ")) this.type.parseCompletions(completions, executionContext, stringReader);
+        if (remaining.endsWith(" ")) {
+            Set<String> prependedCompletions = new HashSet<>();
+            for (String completion : completions) prependedCompletions.add(remaining + completion);
+            completions.clear();
+            completions.addAll(prependedCompletions);
+            completionContext.setCompletionsTrim(remaining.length());
+        }
     }
 
 }

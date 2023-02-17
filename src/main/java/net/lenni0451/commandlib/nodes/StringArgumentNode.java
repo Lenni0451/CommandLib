@@ -1,7 +1,8 @@
 package net.lenni0451.commandlib.nodes;
 
 
-import net.lenni0451.commandlib.ExecutionContext;
+import net.lenni0451.commandlib.contexts.CompletionContext;
+import net.lenni0451.commandlib.contexts.ExecutionContext;
 import net.lenni0451.commandlib.exceptions.ArgumentParseException;
 import net.lenni0451.commandlib.utils.StringReader;
 
@@ -32,7 +33,7 @@ public class StringArgumentNode<E> extends ArgumentNode<E, String> {
     }
 
     @Override
-    public void parseCompletions(Set<String> completions, ExecutionContext<E> context, StringReader stringReader) {
+    public void parseCompletions(Set<String> completions, CompletionContext completionContext, ExecutionContext<E> executionContext, StringReader stringReader) {
         completions.add(this.name());
     }
 
