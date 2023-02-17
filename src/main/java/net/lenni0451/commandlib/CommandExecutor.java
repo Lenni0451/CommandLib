@@ -58,15 +58,7 @@ public class CommandExecutor<E> {
                 ArgumentChain<E> chain = entry.getKey();
                 ChainExecutionException exception = entry.getValue();
                 int argOffset = 0;
-                switch (exception.getReason()) {
-                    case MISSING_SPACE:
-                        argOffset = 1;
-                    case ARGUMENT_PARSE_EXCEPTION:
-                    case NO_ARGUMENTS_LEFT:
-                        break;
-                    default:
-                        continue;
-                }
+                if (ChainExecutionException.Reason.MISSING_SPACE.equals(exception.getReason())) argOffset = 1;
 
                 reader.setCursor(exception.getReaderCursor());
                 ArgumentNode<E, ?> argument = chain.getArgument(exception.getExecutionIndex() - argOffset);
