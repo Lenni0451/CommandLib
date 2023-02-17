@@ -45,14 +45,39 @@ public class ListArgumentNode<E, T> extends ArgumentNode<E, List<T>> {
 
     @Override
     public void parseCompletions(Set<String> completions, CompletionContext completionContext, ExecutionContext<E> executionContext, StringReader stringReader) {
-        String remaining = stringReader.peekRemaining();
-        if (remaining.isEmpty() || remaining.endsWith(" ")) this.type.parseCompletions(completions, executionContext, stringReader);
-        if (remaining.endsWith(" ")) {
-            Set<String> prependedCompletions = new HashSet<>();
-            for (String completion : completions) prependedCompletions.add(remaining + completion);
-            completions.clear();
-            completions.addAll(prependedCompletions);
-            completionContext.setCompletionsTrim(remaining.length());
+        int start = stringReader.getCursor();
+        if (!stringReader.canRead()) {
+            this.type.parseCompletions(completions, executionContext, stringReader);
+            return;
+        }
+        while (stringReader.canRead()) {
+            int cursor = stringReader.getCursor();
+            try {
+                this.type.parseValue(executionContext, stringReader);
+                if (!stringReader.canRead()) return;
+                if (stringReader.read() != ' ') return;
+                if (!stringReader.canRead()) {
+                    stringReader.setCursor(start);
+                    String prefix = stringReader.peekRemaining();
+                    this.type.parseCompletions(completions, executionContext, stringReader);
+                    Set<String> prepended = new HashSet<>();
+                    for (String completion : completions) prepended.add(prefix + completion);
+                    completions.clear();
+                    completions.addAll(prepended);
+                    completionContext.setCompletionsTrim(prefix.length());
+                    return;
+                }
+            } catch (Throwable t) {
+                String prefix = stringReader.getString().substring(0, cursor);
+                stringReader.setCursor(start);
+                this.type.parseCompletions(completions, executionContext, new StringReader(prefix));
+                Set<String> prepended = new HashSet<>();
+                for (String completion : completions) prepended.add(prefix + completion);
+                completions.clear();
+                completions.addAll(prepended);
+                completionContext.setCompletionsTrim(prefix.length());
+                return;
+            }
         }
     }
 
