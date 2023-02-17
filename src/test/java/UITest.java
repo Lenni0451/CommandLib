@@ -195,6 +195,7 @@ public class UITest extends JFrame implements ArgumentBuilder<ExampleExecutor> {
                 }
             }
         } catch (Throwable t) {
+            t.printStackTrace();
             this.addOutput(
                     "Unknown exception",
                     "Exception: " + t.getClass().getSimpleName(),
