@@ -45,34 +45,29 @@ public class ListNode<E, T> extends ArgumentNode<E, List<T>> {
 
     @Override
     public void parseCompletions(Set<String> completions, CompletionContext completionContext, ExecutionContext<E> executionContext, StringReader stringReader) {
-        int start = stringReader.getCursor();
         if (!stringReader.canRead()) {
             this.type.parseCompletions(completions, executionContext, stringReader);
             return;
         }
+
+        int start = stringReader.getCursor();
+        String prefix = stringReader.peekRemaining();
+        boolean endsWithSpace = false;
+        int lastCursor = stringReader.getCursor();
         while (stringReader.canRead()) {
-            int cursor = stringReader.getCursor();
             try {
+                lastCursor = stringReader.getCursor();
                 this.type.parseValue(executionContext, stringReader);
-                if (!stringReader.canRead()) return;
-                if (stringReader.read() != ' ') return;
-                if (!stringReader.canRead()) {
-                    stringReader.setCursor(start);
-                    String prefix = stringReader.peekRemaining();
-                    this.type.parseCompletions(completions, executionContext, stringReader);
-                    Util.prepend(completions, prefix);
-                    completionContext.setCompletionsTrim(prefix.length());
-                    return;
-                }
+                if (stringReader.canRead() && stringReader.read() == ' ' && !stringReader.canRead()) endsWithSpace = true;
             } catch (Throwable t) {
-                String prefix = stringReader.getString().substring(0, cursor);
-                stringReader.setCursor(start);
-                this.type.parseCompletions(completions, executionContext, new StringReader(prefix));
-                Util.prepend(completions, prefix);
-                completionContext.setCompletionsTrim(prefix.length());
-                return;
+                break;
             }
         }
+        if (!endsWithSpace) prefix = stringReader.getString().substring(start, lastCursor);
+        stringReader.setCursor(lastCursor);
+        this.type.parseCompletions(completions, executionContext, new StringReader(prefix));
+        Util.prepend(completions, prefix);
+        completionContext.setCompletionsTrim(prefix.length());
     }
 
 }
