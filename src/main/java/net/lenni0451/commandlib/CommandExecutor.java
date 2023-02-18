@@ -52,10 +52,21 @@ public class CommandExecutor<E> {
             Map<ArgumentChain<E>, ChainExecutionException> closeChains = new HashMap<>();
             Map<ArgumentChain<E>, List<ArgumentChain.MatchedArgument>> matchingChains = this.findMatchingChains(closeChains, true, executionContext, reader);
 
-//            for (List<ArgumentChain.MatchedArgument> value : matchingChains.values()) {
-//                if (value.isEmpty()) continue;
-//                completions.add(value.get(value.size() - 1).getMatch());
-//            }
+            for (Map.Entry<ArgumentChain<E>, List<ArgumentChain.MatchedArgument>> entry : matchingChains.entrySet()) {
+                if (entry.getValue().isEmpty()) continue;
+                ArgumentChain<E> chain = entry.getKey();
+                List<ArgumentChain.MatchedArgument> matchedArguments = entry.getValue();
+
+                CompletionContext completionContext = new CompletionContext();
+                ArgumentChain.MatchedArgument match = matchedArguments.get(matchedArguments.size() - 1);
+                ArgumentNode<E, ?> argument = chain.getArgument(matchedArguments.size() - 1);
+                reader.setCursor(match.getCursor());
+                String check = reader.peekRemaining();
+                Set<String> argumentCompletions = argument.completions(completionContext, executionContext, reader);
+                for (String completion : argumentCompletions) {
+                    if (this.argumentComparator.startsWith(completion, check)) completions.add(completion.substring(completionContext.getCompletionsTrim()));
+                }
+            }
             for (Map.Entry<ArgumentChain<E>, ChainExecutionException> entry : closeChains.entrySet()) {
                 ArgumentChain<E> chain = entry.getKey();
                 ChainExecutionException exception = entry.getValue();

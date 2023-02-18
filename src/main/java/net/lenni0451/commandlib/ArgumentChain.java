@@ -95,7 +95,7 @@ public class ArgumentChain<E> {
             boolean isLast = i == this.arguments.size() - 1;
             try {
                 Object parsedArgument = argument.value(executionContext, reader);
-                out.add(new MatchedArgument(reader.getString().substring(cursor, reader.getCursor()), parsedArgument));
+                out.add(new MatchedArgument(cursor, reader.getString().substring(cursor, reader.getCursor()), parsedArgument));
                 if (!isLast && (!reader.canRead() || reader.read() != ' ')) {
                     throw new ChainExecutionException(ChainExecutionException.Reason.MISSING_SPACE, i + 1, reader.getCursor(), null, reader.readRemaining());
                 }
@@ -141,12 +141,18 @@ public class ArgumentChain<E> {
 
 
     public static class MatchedArgument {
+        private final int cursor;
         private final String match;
         private final Object value;
 
-        private MatchedArgument(final String match, final Object value) {
+        private MatchedArgument(final int cursor, final String match, final Object value) {
+            this.cursor = cursor;
             this.match = match;
             this.value = value;
+        }
+
+        public int getCursor() {
+            return this.cursor;
         }
 
         public String getMatch() {

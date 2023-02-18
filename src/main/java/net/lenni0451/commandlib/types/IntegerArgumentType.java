@@ -59,11 +59,6 @@ public class IntegerArgumentType<E> implements ArgumentType<E, Integer> {
 
     @Override
     public void parseCompletions(Set<String> completions, ExecutionContext<E> executionContext, StringReader stringReader) {
-        Optional<Integer> number = Util.ofThrowing(() -> Integer.valueOf(stringReader.readIntegerNumber()));
-        if (number.isPresent()) {
-            if (this.min != null && number.get() < this.min) return;
-            if (this.max != null && number.get() > this.max) return;
-        }
         if (this.min != null && this.max != null) {
             int diff = this.max - this.min;
             if (diff > 10) {
