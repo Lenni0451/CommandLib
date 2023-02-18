@@ -5,11 +5,11 @@ import net.lenni0451.commandlib.contexts.ExecutionContext;
 import net.lenni0451.commandlib.exceptions.ArgumentParseException;
 import net.lenni0451.commandlib.types.ArgumentType;
 import net.lenni0451.commandlib.utils.StringReader;
+import net.lenni0451.commandlib.utils.Util;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -60,10 +60,7 @@ public class ListArgumentNode<E, T> extends ArgumentNode<E, List<T>> {
                     stringReader.setCursor(start);
                     String prefix = stringReader.peekRemaining();
                     this.type.parseCompletions(completions, executionContext, stringReader);
-                    Set<String> prepended = new HashSet<>();
-                    for (String completion : completions) prepended.add(prefix + completion);
-                    completions.clear();
-                    completions.addAll(prepended);
+                    Util.prepend(completions, prefix);
                     completionContext.setCompletionsTrim(prefix.length());
                     return;
                 }
@@ -71,10 +68,7 @@ public class ListArgumentNode<E, T> extends ArgumentNode<E, List<T>> {
                 String prefix = stringReader.getString().substring(0, cursor);
                 stringReader.setCursor(start);
                 this.type.parseCompletions(completions, executionContext, new StringReader(prefix));
-                Set<String> prepended = new HashSet<>();
-                for (String completion : completions) prepended.add(prefix + completion);
-                completions.clear();
-                completions.addAll(prepended);
+                Util.prepend(completions, prefix);
                 completionContext.setCompletionsTrim(prefix.length());
                 return;
             }

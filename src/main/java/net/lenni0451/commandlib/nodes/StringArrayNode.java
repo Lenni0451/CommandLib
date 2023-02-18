@@ -4,11 +4,11 @@ import net.lenni0451.commandlib.contexts.CompletionContext;
 import net.lenni0451.commandlib.contexts.ExecutionContext;
 import net.lenni0451.commandlib.exceptions.ArgumentParseException;
 import net.lenni0451.commandlib.utils.StringReader;
+import net.lenni0451.commandlib.utils.Util;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -71,10 +71,7 @@ public class StringArrayNode<E> extends ArgumentNode<E, String[]> {
             prefix = stringReader.getString().substring(start, lastCursor);
         }
         this.completor.complete(completions, args.toArray(new String[0]), executionContext);
-        Set<String> prepended = new HashSet<>();
-        for (String completion : completions) prepended.add(prefix + completion);
-        completions.clear();
-        completions.addAll(prepended);
+        Util.prepend(completions, prefix);
         completionContext.setCompletionsTrim(prefix.length());
     }
 
