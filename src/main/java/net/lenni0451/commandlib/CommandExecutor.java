@@ -10,6 +10,7 @@ import net.lenni0451.commandlib.utils.StringReader;
 import net.lenni0451.commandlib.utils.Util;
 import net.lenni0451.commandlib.utils.comparator.ArgumentComparator;
 import net.lenni0451.commandlib.utils.comparator.CloseChainsComparator;
+import net.lenni0451.commandlib.utils.comparator.CompletionsComparator;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -85,7 +86,7 @@ public class CommandExecutor<E> {
         }
         return completions
                 .stream()
-                .sorted()
+                .sorted(new CompletionsComparator(this.argumentComparator))
                 .map(s -> {
                     if (s.contains(" ")) return "\"" + s.replace("\\", "\\\\").replace("\"", "\\\"") + "\"";
                     else return s;

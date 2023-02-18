@@ -181,7 +181,7 @@ public class UITest extends JFrame implements ArgumentBuilder<ExampleExecutor> {
             String input = this.input.getText();
             Set<String> completions = this.commandExecutor.completions(ExampleExecutor.INSTANCE, input);
             this.setOutput(
-                    Arrays.toString(completions.stream().sorted().toArray(String[]::new)),
+                    Arrays.toString(completions.stream().toArray(String[]::new)),
                     ""
             );
 

@@ -1,7 +1,5 @@
 package net.lenni0451.commandlib.utils.comparator;
 
-import java.util.List;
-
 public abstract class ArgumentComparator {
 
     public static final ArgumentComparator CASE_SENSITIVE = new ArgumentComparator() {
@@ -11,13 +9,13 @@ public abstract class ArgumentComparator {
         }
 
         @Override
-        public boolean compare(String s, List<String> list) {
-            return list.contains(s);
+        public boolean startsWith(String s, String b) {
+            return s.startsWith(b);
         }
 
         @Override
-        public boolean startsWith(String s, String b) {
-            return s.startsWith(b);
+        public int compareTo(String a, String b) {
+            return a.compareTo(b);
         }
     };
     public static final ArgumentComparator CASE_INSENSITIVE = new ArgumentComparator() {
@@ -27,24 +25,22 @@ public abstract class ArgumentComparator {
         }
 
         @Override
-        public boolean compare(String s, List<String> list) {
-            for (String l : list) {
-                if (s.equalsIgnoreCase(l)) return true;
-            }
-            return false;
+        public boolean startsWith(String s, String b) {
+            return s.toLowerCase().startsWith(b.toLowerCase());
         }
 
         @Override
-        public boolean startsWith(String s, String b) {
-            return s.toLowerCase().startsWith(b.toLowerCase());
+        public int compareTo(String a, String b) {
+            return a.compareToIgnoreCase(b);
         }
     };
 
 
     public abstract boolean compare(final String a, final String b);
 
-    public abstract boolean compare(final String s, final List<String> list);
 
     public abstract boolean startsWith(final String s, final String b);
+
+    public abstract int compareTo(final String a, final String b);
 
 }
