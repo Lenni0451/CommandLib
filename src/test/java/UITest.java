@@ -2,10 +2,12 @@ import net.lenni0451.commandlib.ArgumentChain;
 import net.lenni0451.commandlib.CommandExecutor;
 import net.lenni0451.commandlib.builder.ArgumentBuilder;
 import net.lenni0451.commandlib.builder.LineBuilder;
+import net.lenni0451.commandlib.contexts.ExecutionContext;
 import net.lenni0451.commandlib.exceptions.ChainExecutionException;
 import net.lenni0451.commandlib.exceptions.CommandNotFoundException;
 import net.lenni0451.commandlib.nodes.ArgumentNode;
 import net.lenni0451.commandlib.nodes.StringArgumentNode;
+import net.lenni0451.commandlib.nodes.StringArrayNode;
 import net.lenni0451.commandlib.types.IntegerArgumentType;
 import net.lenni0451.commandlib.types.StringArgumentType;
 
@@ -129,6 +131,26 @@ public class UITest extends JFrame implements ArgumentBuilder<ExampleExecutor> {
                         .then(this.string("callme")
                                 .executes(() -> System.out.println("Called me"))
                                 .exceptionHandler((executor, t) -> System.out.println("wrong")))
+        );
+        this.commandExecutor.register(
+                this.string("legacy")
+                        .then(this.stringArray("args", new StringArrayNode.Executor<ExampleExecutor>() {
+                            @Override
+                            public void execute(ExampleExecutor executor, String[] args, ExecutionContext<ExampleExecutor> executionContext) {
+                                System.out.println("Legacy: " + Arrays.toString(args));
+                            }
+                        }, new StringArrayNode.Completor<ExampleExecutor>() {
+                            @Override
+                            public void complete(Set<String> completions, String[] currentArgs, ExecutionContext<ExampleExecutor> executionContext) {
+                                if (currentArgs.length == 0) {
+                                    completions.add("testa");
+                                    completions.add("testb");
+                                } else if (currentArgs.length == 1) {
+                                    if (currentArgs[0].equals("testa")) completions.add("a");
+                                    else if (currentArgs[0].equals("testb")) completions.add("b");
+                                }
+                            }
+                        }))
         );
 
         this.commandExecutor.register(
