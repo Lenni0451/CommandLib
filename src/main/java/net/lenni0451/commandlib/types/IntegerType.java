@@ -61,17 +61,15 @@ public class IntegerType<E> implements ArgumentType<E, Integer> {
     public void parseCompletions(Set<String> completions, ExecutionContext<E> executionContext, StringReader stringReader) {
         if (this.min != null && this.max != null) {
             int diff = this.max - this.min;
-            if (diff > 10) {
-                for (int i = 0; i < 10; i++) completions.add(String.valueOf(this.min + (diff / 10 * i)));
-            } else {
-                for (int i = this.min; i <= this.max; i++) completions.add(String.valueOf(i));
-            }
+            int step = Math.max(1, diff / 10);
+            for (int i = this.min; i <= this.max; i += step) completions.add(String.valueOf(i));
+            completions.add(String.valueOf(this.max));
         } else if (this.min != null) {
             for (int i = this.min; i <= this.min + 10; i++) completions.add(String.valueOf(i));
         } else if (this.max != null) {
             for (int i = this.max - 10; i <= this.max; i++) completions.add(String.valueOf(i));
         } else {
-            for (int i = 0; i <= 10; i++) completions.add(String.valueOf(i));
+            for (int i = -5; i <= 10; i++) completions.add(String.valueOf(i));
         }
     }
 
