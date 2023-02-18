@@ -1,7 +1,7 @@
 import net.lenni0451.commandlib.CommandExecutor;
 import net.lenni0451.commandlib.exceptions.CommandExecutionException;
 import net.lenni0451.commandlib.nodes.StringNode;
-import net.lenni0451.commandlib.utils.ArgumentComparator;
+import net.lenni0451.commandlib.utils.comparator.ArgumentComparator;
 
 public class Test {
 

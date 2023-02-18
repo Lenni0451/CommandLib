@@ -1,6 +1,6 @@
 package net.lenni0451.commandlib.contexts;
 
-import net.lenni0451.commandlib.utils.ArgumentComparator;
+import net.lenni0451.commandlib.utils.comparator.ArgumentComparator;
 
 import javax.annotation.Nonnull;
 import java.util.HashMap;

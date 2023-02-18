@@ -1,8 +1,9 @@
-package net.lenni0451.commandlib.utils;
+package net.lenni0451.commandlib.utils.comparator;
 
 import net.lenni0451.commandlib.ArgumentChain;
 import net.lenni0451.commandlib.exceptions.ArgumentParseException;
 import net.lenni0451.commandlib.exceptions.ChainExecutionException;
+import net.lenni0451.commandlib.utils.Util;
 
 import java.util.Comparator;
 import java.util.Iterator;

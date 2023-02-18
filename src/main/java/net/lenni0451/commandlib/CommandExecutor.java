@@ -6,10 +6,10 @@ import net.lenni0451.commandlib.exceptions.ChainExecutionException;
 import net.lenni0451.commandlib.exceptions.CommandExecutionException;
 import net.lenni0451.commandlib.nodes.ArgumentNode;
 import net.lenni0451.commandlib.nodes.StringNode;
-import net.lenni0451.commandlib.utils.ArgumentComparator;
-import net.lenni0451.commandlib.utils.CloseChainsComparator;
 import net.lenni0451.commandlib.utils.StringReader;
 import net.lenni0451.commandlib.utils.Util;
+import net.lenni0451.commandlib.utils.comparator.ArgumentComparator;
+import net.lenni0451.commandlib.utils.comparator.CloseChainsComparator;
 
 import javax.annotation.Nullable;
 import java.util.*;

@@ -1,4 +1,4 @@
-package net.lenni0451.commandlib.utils;
+package net.lenni0451.commandlib.utils.comparator;
 
 import java.util.List;
 
