@@ -9,29 +9,29 @@ import javax.annotation.Nonnull;
 import java.util.Optional;
 import java.util.Set;
 
-public class IntegerArgumentType<E> implements ArgumentType<E, Integer> {
+public class IntegerType<E> implements ArgumentType<E, Integer> {
 
-    public static <E> IntegerArgumentType<E> integer() {
-        return new IntegerArgumentType<>(null, null);
+    public static <E> IntegerType<E> integer() {
+        return new IntegerType<>(null, null);
     }
 
-    public static <E> IntegerArgumentType<E> minInteger(final int min) {
-        return new IntegerArgumentType<>(min, null);
+    public static <E> IntegerType<E> minInteger(final int min) {
+        return new IntegerType<>(min, null);
     }
 
-    public static <E> IntegerArgumentType<E> maxInteger(final int max) {
-        return new IntegerArgumentType<>(null, max);
+    public static <E> IntegerType<E> maxInteger(final int max) {
+        return new IntegerType<>(null, max);
     }
 
-    public static <E> IntegerArgumentType<E> integer(final int min, final int max) {
-        return new IntegerArgumentType<>(min, max);
+    public static <E> IntegerType<E> integer(final int min, final int max) {
+        return new IntegerType<>(min, max);
     }
 
 
     private final Integer min;
     private final Integer max;
 
-    private IntegerArgumentType(final Integer min, final Integer max) {
+    private IntegerType(final Integer min, final Integer max) {
         if (min != null && max != null && min > max) throw new IllegalArgumentException("min must be smaller than max");
         this.min = min;
         this.max = max;

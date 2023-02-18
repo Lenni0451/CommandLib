@@ -3,13 +3,13 @@ import net.lenni0451.commandlib.CommandExecutor;
 import net.lenni0451.commandlib.builder.ArgumentBuilder;
 import net.lenni0451.commandlib.exceptions.ChainExecutionException;
 import net.lenni0451.commandlib.exceptions.CommandNotFoundException;
-import net.lenni0451.commandlib.nodes.StringArgumentNode;
+import net.lenni0451.commandlib.nodes.StringNode;
 import net.lenni0451.commandlib.utils.ArgumentComparator;
 
 import java.util.Map;
 import java.util.Scanner;
 
-import static net.lenni0451.commandlib.types.IntegerArgumentType.integer;
+import static net.lenni0451.commandlib.types.IntegerType.integer;
 
 public class Test2 implements ArgumentBuilder<Runtime> {
 
@@ -20,7 +20,7 @@ public class Test2 implements ArgumentBuilder<Runtime> {
 
     public void run() throws Throwable {
         CommandExecutor<Runtime> executor = new CommandExecutor<>(ArgumentComparator.CASE_SENSITIVE);
-        StringArgumentNode<Runtime> root = string("test");
+        StringNode<Runtime> root = string("test");
         root.then(
                 typed("int", integer(0, 10)).executes(ctx -> {
                     int i = ctx.getArgument("int");

@@ -10,15 +10,15 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Set;
 
-public class StringArgumentNode<E> extends ArgumentNode<E, String> {
+public class StringNode<E> extends ArgumentNode<E, String> {
 
-    public StringArgumentNode(final String name) {
+    public StringNode(final String name) {
         super(name);
         this.weight = 100;
         this.providesArgument = false;
     }
 
-    public StringArgumentNode(final String name, @Nullable final String description) {
+    public StringNode(final String name, @Nullable final String description) {
         super(name, description);
         this.weight = 100;
         this.providesArgument = false;

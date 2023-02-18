@@ -1,9 +1,9 @@
 package net.lenni0451.commandlib.builder;
 
-import net.lenni0451.commandlib.nodes.ListArgumentNode;
-import net.lenni0451.commandlib.nodes.StringArgumentNode;
+import net.lenni0451.commandlib.nodes.ListNode;
 import net.lenni0451.commandlib.nodes.StringArrayNode;
-import net.lenni0451.commandlib.nodes.TypedArgumentNode;
+import net.lenni0451.commandlib.nodes.StringNode;
+import net.lenni0451.commandlib.nodes.TypedNode;
 import net.lenni0451.commandlib.types.ArgumentType;
 import net.lenni0451.commandlib.types.DynamicType;
 import net.lenni0451.commandlib.utils.Util;
@@ -13,28 +13,28 @@ import javax.annotation.Nullable;
 
 public interface ArgumentBuilder<E> {
 
-    default StringArgumentNode<E> string(final String s) {
-        return new StringArgumentNode<>(s);
+    default StringNode<E> string(final String s) {
+        return new StringNode<>(s);
     }
 
-    default StringArgumentNode<E> string(final String s, @Nullable final String description) {
-        return new StringArgumentNode<>(s, description);
+    default StringNode<E> string(final String s, @Nullable final String description) {
+        return new StringNode<>(s, description);
     }
 
-    default <T> TypedArgumentNode<E, T> typed(final String name, final ArgumentType<E, T> type) {
-        return new TypedArgumentNode<>(name, type);
+    default <T> TypedNode<E, T> typed(final String name, final ArgumentType<E, T> type) {
+        return new TypedNode<>(name, type);
     }
 
-    default <T> TypedArgumentNode<E, T> typed(final String name, @Nullable final String description, final ArgumentType<E, T> type) {
-        return new TypedArgumentNode<>(name, description, type);
+    default <T> TypedNode<E, T> typed(final String name, @Nullable final String description, final ArgumentType<E, T> type) {
+        return new TypedNode<>(name, description, type);
     }
 
-    default <T> ListArgumentNode<E, T> list(final String name, final ArgumentType<E, T> type) {
-        return new ListArgumentNode<>(name, type);
+    default <T> ListNode<E, T> list(final String name, final ArgumentType<E, T> type) {
+        return new ListNode<>(name, type);
     }
 
-    default <T> ListArgumentNode<E, T> list(final String name, @Nullable final String description, final ArgumentType<E, T> type) {
-        return new ListArgumentNode<>(name, description, type);
+    default <T> ListNode<E, T> list(final String name, @Nullable final String description, final ArgumentType<E, T> type) {
+        return new ListNode<>(name, description, type);
     }
 
     default StringArrayNode<E> stringArray(final String name, final StringArrayNode.Executor<E> executor) {

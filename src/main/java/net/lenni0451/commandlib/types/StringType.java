@@ -7,24 +7,24 @@ import net.lenni0451.commandlib.utils.StringReader;
 import javax.annotation.Nonnull;
 import java.util.Set;
 
-public class StringArgumentType<E> implements ArgumentType<E, String> {
+public class StringType<E> implements ArgumentType<E, String> {
 
-    public static <E> StringArgumentType<E> word() {
-        return new StringArgumentType<>(Type.WORD);
+    public static <E> StringType<E> word() {
+        return new StringType<>(Type.WORD);
     }
 
-    public static <E> StringArgumentType<E> string() {
-        return new StringArgumentType<>(Type.STRING);
+    public static <E> StringType<E> string() {
+        return new StringType<>(Type.STRING);
     }
 
-    public static <E> StringArgumentType<E> greedyString() {
-        return new StringArgumentType<>(Type.GREEDY_STRING);
+    public static <E> StringType<E> greedyString() {
+        return new StringType<>(Type.GREEDY_STRING);
     }
 
 
     private final Type type;
 
-    private StringArgumentType(final Type type) {
+    private StringType(final Type type) {
         this.type = type;
     }
 

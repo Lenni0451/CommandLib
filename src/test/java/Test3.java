@@ -1,5 +1,5 @@
 import net.lenni0451.commandlib.CommandExecutor;
-import net.lenni0451.commandlib.nodes.StringArgumentNode;
+import net.lenni0451.commandlib.nodes.StringNode;
 
 import java.util.Scanner;
 import java.util.function.Consumer;
@@ -19,12 +19,12 @@ public class Test3 {
         }
     }
 
-    private static StringArgumentNode<Runtime> literal(final String literal) {
-        return new StringArgumentNode<>(literal);
+    private static StringNode<Runtime> literal(final String literal) {
+        return new StringNode<>(literal);
     }
 
-    private static StringArgumentNode<Runtime> literal(final String literal, final Consumer<StringArgumentNode<Runtime>> consumer) {
-        StringArgumentNode<Runtime> node = literal(literal);
+    private static StringNode<Runtime> literal(final String literal, final Consumer<StringNode<Runtime>> consumer) {
+        StringNode<Runtime> node = literal(literal);
         consumer.accept(node);
         return node;
     }

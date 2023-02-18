@@ -1,6 +1,6 @@
 import net.lenni0451.commandlib.CommandExecutor;
 import net.lenni0451.commandlib.exceptions.CommandNotFoundException;
-import net.lenni0451.commandlib.nodes.StringArgumentNode;
+import net.lenni0451.commandlib.nodes.StringNode;
 import net.lenni0451.commandlib.utils.ArgumentComparator;
 
 public class Test {
@@ -38,7 +38,7 @@ literal("test").arg("lul", new PlayerArgType()).executes(ctx -> {
 //    }
 
     public static void main(String[] args) throws CommandNotFoundException {
-        StringArgumentNode<Runtime> node = literal("test");
+        StringNode<Runtime> node = literal("test");
         node.then(literal("lul").executes(() -> {
             System.out.println("1");
         }));
@@ -70,8 +70,8 @@ literal("test").arg("lul", new PlayerArgType()).executes(ctx -> {
         }
     }
 
-    private static StringArgumentNode<Runtime> literal(final String literal) {
-        return new StringArgumentNode<>(literal);
+    private static StringNode<Runtime> literal(final String literal) {
+        return new StringNode<>(literal);
     }
 
 }

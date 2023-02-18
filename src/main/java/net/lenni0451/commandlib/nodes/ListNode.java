@@ -13,17 +13,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-public class ListArgumentNode<E, T> extends ArgumentNode<E, List<T>> {
+public class ListNode<E, T> extends ArgumentNode<E, List<T>> {
 
     private final ArgumentType<E, T> type;
 
-    public ListArgumentNode(final String name, final ArgumentType<E, T> type) {
+    public ListNode(final String name, final ArgumentType<E, T> type) {
         super(name);
         this.type = type;
         this.weight = type.getWeight();
     }
 
-    public ListArgumentNode(final String name, @Nullable final String description, final ArgumentType<E, T> type) {
+    public ListNode(final String name, @Nullable final String description, final ArgumentType<E, T> type) {
         super(name, description);
         this.type = type;
         this.weight = type.getWeight();

@@ -5,7 +5,7 @@ import net.lenni0451.commandlib.contexts.ExecutionContext;
 import net.lenni0451.commandlib.exceptions.ChainExecutionException;
 import net.lenni0451.commandlib.exceptions.CommandNotFoundException;
 import net.lenni0451.commandlib.nodes.ArgumentNode;
-import net.lenni0451.commandlib.nodes.StringArgumentNode;
+import net.lenni0451.commandlib.nodes.StringNode;
 import net.lenni0451.commandlib.utils.ArgumentComparator;
 import net.lenni0451.commandlib.utils.CloseChainsComparator;
 import net.lenni0451.commandlib.utils.StringReader;
@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 public class CommandExecutor<E> {
 
     private final ArgumentComparator argumentComparator;
-    private final Map<StringArgumentNode<E>, List<ArgumentChain<E>>> chains;
+    private final Map<StringNode<E>, List<ArgumentChain<E>>> chains;
 
     public CommandExecutor() {
         this(ArgumentComparator.CASE_INSENSITIVE);
@@ -30,13 +30,13 @@ public class CommandExecutor<E> {
     }
 
     public void register(final ArgumentNode<E, ?> argumentNode) {
-        if (!(argumentNode instanceof StringArgumentNode)) throw new IllegalArgumentException("Register argument node must be a StringArgumentNode");
-        this.register((StringArgumentNode<E>) argumentNode);
+        if (!(argumentNode instanceof StringNode)) throw new IllegalArgumentException("Register argument node must be a StringArgumentNode");
+        this.register((StringNode<E>) argumentNode);
     }
 
-    public void register(final StringArgumentNode<E> stringArgumentNode) {
-        this.chains.entrySet().removeIf(entry -> this.argumentComparator.compare(entry.getKey().name(), stringArgumentNode.name()));
-        this.chains.put(stringArgumentNode, ArgumentChain.buildChains(stringArgumentNode));
+    public void register(final StringNode<E> stringNode) {
+        this.chains.entrySet().removeIf(entry -> this.argumentComparator.compare(entry.getKey().name(), stringNode.name()));
+        this.chains.put(stringNode, ArgumentChain.buildChains(stringNode));
     }
 
     public Set<String> completions(final E executor, final String command) {
@@ -46,7 +46,7 @@ public class CommandExecutor<E> {
     public Set<String> completions(final E executor, final StringReader reader) {
         Set<String> completions = new HashSet<>();
         if (!reader.canRead()) {
-            completions.addAll(this.chains.keySet().stream().map(StringArgumentNode::name).collect(Collectors.toList()));
+            completions.addAll(this.chains.keySet().stream().map(StringNode::name).collect(Collectors.toList()));
         } else {
             ExecutionContext<E> executionContext = new ExecutionContext<>(this.argumentComparator, executor, false);
             Map<ArgumentChain<E>, ChainExecutionException> closeChains = new HashMap<>();

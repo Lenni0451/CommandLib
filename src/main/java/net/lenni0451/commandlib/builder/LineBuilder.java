@@ -2,7 +2,7 @@ package net.lenni0451.commandlib.builder;
 
 import net.lenni0451.commandlib.contexts.ExecutionContext;
 import net.lenni0451.commandlib.nodes.ArgumentNode;
-import net.lenni0451.commandlib.nodes.TypedArgumentNode;
+import net.lenni0451.commandlib.nodes.TypedNode;
 import net.lenni0451.commandlib.types.ArgumentType;
 import net.lenni0451.commandlib.utils.Util;
 import net.lenni0451.commandlib.utils.interfaces.CommandExceptionHandler;
@@ -81,16 +81,16 @@ public class LineBuilder<E> {
         }));
     }
 
-    private <R> TypedArgumentNode<E, R> build(final BiConsumer<List<LineNode<E, R>>, TypedArgumentNode<E, R>> executorAppender) {
+    private <R> TypedNode<E, R> build(final BiConsumer<List<LineNode<E, R>>, TypedNode<E, R>> executorAppender) {
         if (this.nodes.isEmpty()) throw new IllegalStateException("No arguments defined");
 
-        TypedArgumentNode<E, R> root = null;
-        TypedArgumentNode<E, R> current = null;
+        TypedNode<E, R> root = null;
+        TypedNode<E, R> current = null;
         for (int i = 0; i < this.nodes.size(); i++) {
             LineNode<E, R> node = (LineNode<E, R>) this.nodes.get(i);
             LineNode<E, R> next = i + 1 < this.nodes.size() ? (LineNode<E, R>) this.nodes.get(i + 1) : null;
 
-            TypedArgumentNode<E, R> newNode = node.toArgumentNode();
+            TypedNode<E, R> newNode = node.toArgumentNode();
             if (next == null || next.defaultValue != null) {
                 List<LineNode<E, R>> defaults = Util.cast(this.nodes.subList(i + 1, this.nodes.size()));
                 executorAppender.accept(defaults, newNode);
@@ -118,8 +118,8 @@ public class LineBuilder<E> {
             this.type = argumentType;
         }
 
-        private TypedArgumentNode<E, T> toArgumentNode() {
-            TypedArgumentNode<E, T> node = new TypedArgumentNode<>(this.name, this.description, this.type);
+        private TypedNode<E, T> toArgumentNode() {
+            TypedNode<E, T> node = new TypedNode<>(this.name, this.description, this.type);
             node
                     .validator(this.validator)
                     .suggestions(this.completionsProvider)

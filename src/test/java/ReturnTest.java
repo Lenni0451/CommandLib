@@ -1,6 +1,6 @@
 import net.lenni0451.commandlib.CommandExecutor;
 import net.lenni0451.commandlib.builder.ArgumentBuilder;
-import net.lenni0451.commandlib.types.StringArgumentType;
+import net.lenni0451.commandlib.types.StringType;
 
 public class ReturnTest implements ArgumentBuilder<ExampleExecutor> {
 
@@ -11,7 +11,7 @@ public class ReturnTest implements ArgumentBuilder<ExampleExecutor> {
 
     private ReturnTest() throws Throwable {
         CommandExecutor<ExampleExecutor> commandExecutor = new CommandExecutor<>();
-        commandExecutor.register(this.string("hello").then(this.typed("name", StringArgumentType.word()).executes(ctx -> "Hello " + ctx.getArgument("name"))));
+        commandExecutor.register(this.string("hello").then(this.typed("name", StringType.word()).executes(ctx -> "Hello " + ctx.getArgument("name"))));
         System.out.println(commandExecutor.<String>execute(ExampleExecutor.INSTANCE, "hello World"));
     }
 
