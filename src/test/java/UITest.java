@@ -4,7 +4,7 @@ import net.lenni0451.commandlib.builder.ArgumentBuilder;
 import net.lenni0451.commandlib.builder.LineBuilder;
 import net.lenni0451.commandlib.contexts.ExecutionContext;
 import net.lenni0451.commandlib.exceptions.ChainExecutionException;
-import net.lenni0451.commandlib.exceptions.CommandNotFoundException;
+import net.lenni0451.commandlib.exceptions.CommandExecutionException;
 import net.lenni0451.commandlib.nodes.ArgumentNode;
 import net.lenni0451.commandlib.nodes.StringArrayNode;
 import net.lenni0451.commandlib.nodes.StringNode;
@@ -190,7 +190,7 @@ public class UITest extends JFrame implements ArgumentBuilder<ExampleExecutor> {
                     "Successfully executed command",
                     "Output: " + out
             );
-        } catch (CommandNotFoundException e) {
+        } catch (CommandExecutionException e) {
             this.addOutput(
                     "Command not found exception",
                     "Command: " + e.getCommand(),

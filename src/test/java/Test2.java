@@ -2,7 +2,7 @@ import net.lenni0451.commandlib.ArgumentChain;
 import net.lenni0451.commandlib.CommandExecutor;
 import net.lenni0451.commandlib.builder.ArgumentBuilder;
 import net.lenni0451.commandlib.exceptions.ChainExecutionException;
-import net.lenni0451.commandlib.exceptions.CommandNotFoundException;
+import net.lenni0451.commandlib.exceptions.CommandExecutionException;
 import net.lenni0451.commandlib.nodes.StringNode;
 import net.lenni0451.commandlib.utils.ArgumentComparator;
 
@@ -44,7 +44,7 @@ public class Test2 implements ArgumentBuilder<Runtime> {
             String line = s.nextLine();
             try {
                 executor.execute(Runtime.getRuntime(), line);
-            } catch (CommandNotFoundException e) {
+            } catch (CommandExecutionException e) {
                 for (Map.Entry<ArgumentChain<?>, ChainExecutionException> entry : e.getMostLikelyChains().entrySet()) {
                     if (entry.getValue() == null) {
                         System.out.println(e.getMessage());

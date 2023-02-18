@@ -3,7 +3,7 @@ package net.lenni0451.commandlib;
 import net.lenni0451.commandlib.contexts.CompletionContext;
 import net.lenni0451.commandlib.contexts.ExecutionContext;
 import net.lenni0451.commandlib.exceptions.ChainExecutionException;
-import net.lenni0451.commandlib.exceptions.CommandNotFoundException;
+import net.lenni0451.commandlib.exceptions.CommandExecutionException;
 import net.lenni0451.commandlib.nodes.ArgumentNode;
 import net.lenni0451.commandlib.nodes.StringNode;
 import net.lenni0451.commandlib.utils.ArgumentComparator;
@@ -94,24 +94,24 @@ public class CommandExecutor<E> {
     }
 
     @Nullable
-    public <T> T execute(final E executor, final String command) throws CommandNotFoundException {
+    public <T> T execute(final E executor, final String command) throws CommandExecutionException {
         return this.execute(executor, new StringReader(command));
     }
 
     @Nullable
-    public <T> T execute(final E executor, final StringReader reader) throws CommandNotFoundException {
-        if (!reader.canRead()) throw new CommandNotFoundException("<none>");
+    public <T> T execute(final E executor, final StringReader reader) throws CommandExecutionException {
+        if (!reader.canRead()) throw new CommandExecutionException("<none>");
         ExecutionContext<E> executionContext = new ExecutionContext<>(this.argumentComparator, executor, true);
         Map<ArgumentChain<E>, ChainExecutionException> closeChains = new HashMap<>();
         Map<ArgumentChain<E>, List<ArgumentChain.MatchedArgument>> matchingChains = this.findMatchingChains(closeChains, false, executionContext, reader);
         try {
             return this.executeChain(matchingChains, executionContext, reader);
-        } catch (CommandNotFoundException e) {
+        } catch (CommandExecutionException e) {
             if (closeChains.isEmpty()) throw e;
 
             closeChains = CloseChainsComparator.getClosest(closeChains);
             closeChains = Util.sortMap(closeChains, (o1, o2) -> this.compareChains(o1.getKey(), o2.getKey()));
-            throw new CommandNotFoundException(e.getCommand(), Util.cast(closeChains));
+            throw new CommandExecutionException(e.getCommand(), Util.cast(closeChains));
         }
     }
 
@@ -132,9 +132,9 @@ public class CommandExecutor<E> {
         return out;
     }
 
-    private <T> T executeChain(final Map<ArgumentChain<E>, List<ArgumentChain.MatchedArgument>> chains, final ExecutionContext<E> executionContext, final StringReader reader) throws CommandNotFoundException {
+    private <T> T executeChain(final Map<ArgumentChain<E>, List<ArgumentChain.MatchedArgument>> chains, final ExecutionContext<E> executionContext, final StringReader reader) throws CommandExecutionException {
         if (chains.isEmpty()) {
-            throw new CommandNotFoundException(reader.readWordOrString());
+            throw new CommandExecutionException(reader.readWordOrString());
         } else if (chains.size() == 1) {
             ArgumentChain<E> chain = chains.keySet().iterator().next();
             List<ArgumentChain.MatchedArgument> arguments = chains.get(chain);

@@ -1,5 +1,5 @@
 import net.lenni0451.commandlib.CommandExecutor;
-import net.lenni0451.commandlib.exceptions.CommandNotFoundException;
+import net.lenni0451.commandlib.exceptions.CommandExecutionException;
 import net.lenni0451.commandlib.nodes.StringNode;
 import net.lenni0451.commandlib.utils.ArgumentComparator;
 
@@ -37,7 +37,7 @@ literal("test").arg("lul", new PlayerArgType()).executes(ctx -> {
 //        System.out.println(sr.readDecimalNumber());
 //    }
 
-    public static void main(String[] args) throws CommandNotFoundException {
+    public static void main(String[] args) throws CommandExecutionException {
         StringNode<Runtime> node = literal("test");
         node.then(literal("lul").executes(() -> {
             System.out.println("1");
