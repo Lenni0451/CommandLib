@@ -9,8 +9,6 @@ import java.util.regex.Pattern;
 public class StringReader {
 
     private static final Pattern STRING_ESCAPE_REPLACEMENT = Pattern.compile("\\\\(.)");
-    private static final Pattern INTEGER_NUMBER = Pattern.compile("-?\\d+");
-    private static final Pattern DECIMAL_NUMBER = Pattern.compile("-?\\d+[,.]?\\d*");
 
 
     private final String string;
@@ -291,7 +289,7 @@ public class StringReader {
      */
     public String readIntegerNumber() {
         String s = this.readWord();
-        if (!INTEGER_NUMBER.matcher(s).matches()) throw new IllegalStateException("Expected integer but got '" + s + "'");
+        if (!Util.INT_PATTERN.matcher(s).matches()) throw new IllegalStateException("Expected integer but got '" + s + "'");
         return s;
     }
 
@@ -302,7 +300,7 @@ public class StringReader {
      */
     public String readDecimalNumber() {
         String s = this.readWord();
-        if (!DECIMAL_NUMBER.matcher(s).matches()) throw new IllegalStateException("Expected decimal number but got '" + s + "'");
+        if (!Util.DECIMAL_PATTERN.matcher(s).matches()) throw new IllegalStateException("Expected decimal number but got '" + s + "'");
         return s.replace(',', '.');
     }
 

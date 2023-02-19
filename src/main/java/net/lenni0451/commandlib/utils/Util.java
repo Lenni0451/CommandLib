@@ -3,12 +3,22 @@ package net.lenni0451.commandlib.utils;
 import net.lenni0451.commandlib.utils.interfaces.ThrowingSupplier;
 
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
  * Some useful methods required by the command lib.
  */
 public class Util {
+
+    /**
+     * A pattern to check if a string is an integer number.
+     */
+    public static final Pattern INT_PATTERN = Pattern.compile("^[+-]?\\d+$");
+    /**
+     * A pattern to check if a string is a decimal number.
+     */
+    public static final Pattern DECIMAL_PATTERN = Pattern.compile("^[+-]?(?:\\d+(\\.\\d*)?|\\d*\\.\\d+)$");
 
     /**
      * Get an optional from a throwing supplier.<br>
