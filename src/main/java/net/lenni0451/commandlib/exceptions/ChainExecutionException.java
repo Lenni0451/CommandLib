@@ -1,7 +1,17 @@
 package net.lenni0451.commandlib.exceptions;
 
+import net.lenni0451.commandlib.utils.interfaces.CommandExceptionHandler;
+
 import javax.annotation.Nullable;
 
+/**
+ * An exception which is thrown when the execution of a command chain fails.<br>
+ * Reasons for failure are:<br>
+ * - A {@link ArgumentParseException} was thrown while parsing an argument<br>
+ * - A unhandled {@link RuntimeException} was thrown while parsing an argument<br>
+ * - The input ended before all arguments were parsed<br>
+ * - The input contained more arguments than the command chain can handle
+ */
 public class ChainExecutionException extends Exception {
 
     private final Reason reason;
@@ -45,31 +55,58 @@ public class ChainExecutionException extends Exception {
         this.extraData = extraData;
     }
 
+    /**
+     * @return The reason why the execution failed
+     */
     public Reason getReason() {
         return this.reason;
     }
 
+    /**
+     * @return The index of the argument which caused the failure
+     */
     public int getExecutionIndex() {
         return this.executionIndex;
     }
 
+    /**
+     * @return The cursor position of the reader when the failure occurred
+     */
     public int getReaderCursor() {
         return this.readerCursor;
     }
 
+    /**
+     * @return The name of the argument which caused the failure
+     */
     @Nullable
     public String getArgumentName() {
         return this.argumentName;
     }
 
+    /**
+     * @return Extra data which was provided by the command chain
+     */
     @Nullable
     public String getExtraData() {
         return this.extraData;
     }
 
 
+    /**
+     * The reason why the execution failed.
+     */
     public enum Reason {
-        HANDLED_OTHERWISE, ARGUMENT_PARSE_EXCEPTION, RUNTIME_EXCEPTION, MISSING_SPACE, NO_ARGUMENTS_LEFT, TOO_MANY_ARGUMENTS
+        /**
+         * This is not really a reason but is required if the occurred exception was already handled by the argument node {@link CommandExceptionHandler}.<br>
+         * It should be treated like {@link #ARGUMENT_PARSE_EXCEPTION} or {@link #RUNTIME_EXCEPTION}.
+         */
+        HANDLED_OTHERWISE,
+        ARGUMENT_PARSE_EXCEPTION,
+        RUNTIME_EXCEPTION,
+        MISSING_SPACE,
+        NO_ARGUMENTS_LEFT,
+        TOO_MANY_ARGUMENTS
     }
 
 }

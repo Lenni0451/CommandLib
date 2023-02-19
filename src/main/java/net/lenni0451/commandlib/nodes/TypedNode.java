@@ -10,6 +10,12 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Set;
 
+/**
+ * The typed argument node matches the given {@link ArgumentType} which can be treated like a wrapper for argument nodes.
+ *
+ * @param <E> The type of the executor
+ * @param <T> The type of the argument
+ */
 public class TypedNode<E, T> extends ArgumentNode<E, T> {
 
     private final ArgumentType<E, T> type;
@@ -28,12 +34,12 @@ public class TypedNode<E, T> extends ArgumentNode<E, T> {
 
     @Nonnull
     @Override
-    public T parseValue(ExecutionContext<E> executionContext, StringReader stringReader) throws ArgumentParseException, RuntimeException {
+    protected T parseValue(ExecutionContext<E> executionContext, StringReader stringReader) throws ArgumentParseException, RuntimeException {
         return this.type.parseValue(executionContext, stringReader);
     }
 
     @Override
-    public void parseCompletions(Set<String> completions, CompletionContext completionContext, ExecutionContext<E> executionContext, StringReader stringReader) {
+    protected void parseCompletions(Set<String> completions, CompletionContext completionContext, ExecutionContext<E> executionContext, StringReader stringReader) {
         this.type.parseCompletions(completions, executionContext, stringReader);
     }
 

@@ -7,6 +7,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+/**
+ * A comparator to sort command completions.<br>
+ * Numbers are sorted first, then the rest is sorted by {@link Comparator#naturalOrder()}.
+ */
 public class CompletionsComparator implements Comparator<String> {
 
     private static final Pattern INT_PATTERN = Pattern.compile("^[+-]?\\d+$");

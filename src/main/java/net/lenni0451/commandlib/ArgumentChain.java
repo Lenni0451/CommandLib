@@ -13,8 +13,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+/**
+ * A chain of arguments required for correct execution.
+ *
+ * @param <E> The type of the executor
+ */
 public class ArgumentChain<E> {
 
+    /**
+     * Build a list of all chains for the given argument node.
+     *
+     * @param argument The argument node
+     * @param <E>      The type of the executor
+     * @return The list of chains
+     * @throws IllegalArgumentException If a duplicate argument name is found or the chain end has no executor
+     */
     public static <E> List<ArgumentChain<E>> buildChains(final ArgumentNode<E, ?> argument) {
         List<ArgumentChain<E>> chains = new ArrayList<>();
 
@@ -77,16 +90,34 @@ public class ArgumentChain<E> {
         return this.arguments.size();
     }
 
+    /**
+     * @return The weights of all arguments in this chain
+     */
     public int[] getWeights() {
         int[] weights = new int[this.arguments.size()];
         for (int i = 0; i < this.arguments.size(); i++) weights[i] = this.arguments.get(i).weight();
         return weights;
     }
 
+    /**
+     * Get an argument node by its index.
+     *
+     * @param index The index
+     * @return The argument node
+     * @throws IndexOutOfBoundsException If the index is out of bounds
+     */
     public ArgumentNode<E, ?> getArgument(final int index) {
         return this.arguments.get(index);
     }
 
+    /**
+     * Parse the given input and return the parsed arguments.
+     *
+     * @param executionContext The execution context
+     * @param reader           The input reader
+     * @return The parsed arguments
+     * @throws ChainExecutionException If the input can not be parsed
+     */
     public List<MatchedArgument> parse(final ExecutionContext<E> executionContext, final StringReader reader) throws ChainExecutionException {
         List<MatchedArgument> out = new ArrayList<>();
         for (int i = 0; i < this.arguments.size(); i++) {
@@ -116,6 +147,12 @@ public class ArgumentChain<E> {
         return out;
     }
 
+    /**
+     * Populate the given execution context with the given arguments.
+     *
+     * @param executionContext The execution context
+     * @param arguments        The arguments
+     */
     public void populateArguments(final ExecutionContext<E> executionContext, final List<ArgumentChain.MatchedArgument> arguments) {
         for (int i = 0; i < this.arguments.size(); i++) {
             ArgumentNode<E, ?> argumentNode = this.arguments.get(i);
@@ -124,6 +161,11 @@ public class ArgumentChain<E> {
         }
     }
 
+    /**
+     * Get the executor of this chain.
+     *
+     * @return The executor
+     */
     public Function<ExecutionContext<E>, ?> getExecutor() {
         return this.arguments.get(this.arguments.size() - 1).executor();
     }
@@ -140,6 +182,9 @@ public class ArgumentChain<E> {
     }
 
 
+    /**
+     * A wrapper for an argument that has been matched.
+     */
     public static class MatchedArgument {
         private final int cursor;
         private final String match;
@@ -151,14 +196,23 @@ public class ArgumentChain<E> {
             this.value = value;
         }
 
+        /**
+         * @return The cursor position of the start of the match
+         */
         public int getCursor() {
             return this.cursor;
         }
 
+        /**
+         * @return The matched string
+         */
         public String getMatch() {
             return this.match;
         }
 
+        /**
+         * @return The parsed value
+         */
         public Object getValue() {
             return this.value;
         }

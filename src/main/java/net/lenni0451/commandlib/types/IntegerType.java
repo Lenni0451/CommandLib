@@ -9,20 +9,59 @@ import javax.annotation.Nonnull;
 import java.util.Optional;
 import java.util.Set;
 
+/**
+ * The integer type parses an integer number from the string reader.<br>
+ * Min and max values can be defined (inclusive).<br>
+ * Completions are calculated based on the min and max values.
+ *
+ * @param <E> The type of the executor
+ */
 public class IntegerType<E> implements ArgumentType<E, Integer> {
 
+    /**
+     * Create a new integer type with no min and max value.<br>
+     * Values between {@link Integer#MIN_VALUE} and {@link Integer#MAX_VALUE} are allowed.
+     *
+     * @param <E> The type of the executor
+     * @return The new integer type
+     */
     public static <E> IntegerType<E> integer() {
         return new IntegerType<>(null, null);
     }
 
+    /**
+     * Create a new integer type with a min value.<br>
+     * Values between {@code min} and {@link Integer#MAX_VALUE} are allowed.
+     *
+     * @param min The min value
+     * @param <E> The type of the executor
+     * @return The new integer type
+     */
     public static <E> IntegerType<E> minInteger(final int min) {
         return new IntegerType<>(min, null);
     }
 
+    /**
+     * Create a new integer type with a max value.<br>
+     * Values between {@link Integer#MIN_VALUE} and {@code max} are allowed.
+     *
+     * @param max The max value
+     * @param <E> The type of the executor
+     * @return The new integer type
+     */
     public static <E> IntegerType<E> maxInteger(final int max) {
         return new IntegerType<>(null, max);
     }
 
+    /**
+     * Create a new integer type with a min and max value.<br>
+     * Values between {@code min} and {@code max} are allowed.
+     *
+     * @param min The min value
+     * @param max The max value
+     * @param <E> The type of the executor
+     * @return The new integer type
+     */
     public static <E> IntegerType<E> integer(final int min, final int max) {
         return new IntegerType<>(min, max);
     }

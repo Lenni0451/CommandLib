@@ -13,6 +13,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * The list node can be used to parse the same argument multiple times.<br>
+ * This has to be the last node in the tree as it will consume all remaining input.
+ *
+ * @param <E> The type of the executor
+ * @param <T> The type of the argument
+ */
 public class ListNode<E, T> extends ArgumentNode<E, List<T>> {
 
     private final ArgumentType<E, T> type;
@@ -31,7 +38,7 @@ public class ListNode<E, T> extends ArgumentNode<E, List<T>> {
 
     @Nonnull
     @Override
-    public List<T> parseValue(ExecutionContext<E> executionContext, StringReader stringReader) throws ArgumentParseException, RuntimeException {
+    protected List<T> parseValue(ExecutionContext<E> executionContext, StringReader stringReader) throws ArgumentParseException, RuntimeException {
         List<T> result = new ArrayList<>();
         while (stringReader.canRead()) {
             result.add(this.type.parseValue(executionContext, stringReader));
@@ -44,7 +51,7 @@ public class ListNode<E, T> extends ArgumentNode<E, List<T>> {
     }
 
     @Override
-    public void parseCompletions(Set<String> completions, CompletionContext completionContext, ExecutionContext<E> executionContext, StringReader stringReader) {
+    protected void parseCompletions(Set<String> completions, CompletionContext completionContext, ExecutionContext<E> executionContext, StringReader stringReader) {
         if (!stringReader.canRead()) {
             this.type.parseCompletions(completions, executionContext, stringReader);
             return;

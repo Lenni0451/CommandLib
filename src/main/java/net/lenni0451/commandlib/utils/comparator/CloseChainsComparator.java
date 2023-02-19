@@ -9,8 +9,21 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Map;
 
+/**
+ * Compare failed argument chains by their reason.
+ *
+ * @param <E> The type of the executor
+ */
 public class CloseChainsComparator<E> implements Comparator<Map.Entry<ArgumentChain<E>, ChainExecutionException>> {
 
+    /**
+     * Sort the given map by the fail reason.<br>
+     * The most likely wanted chain will be the first one in the map.
+     *
+     * @param in  The map to sort
+     * @param <E> The type of the executor
+     * @return The sorted map
+     */
     public static <E> Map<ArgumentChain<E>, ChainExecutionException> getClosest(final Map<ArgumentChain<E>, ChainExecutionException> in) {
         if (in.isEmpty()) return in;
         Map<ArgumentChain<E>, ChainExecutionException> closest = Util.sortMap(in, new CloseChainsComparator<>());

@@ -16,6 +16,11 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * The handler for all registered commands.
+ *
+ * @param <E> The type of the executor
+ */
 public class CommandExecutor<E> {
 
     private final ArgumentComparator argumentComparator;
@@ -30,20 +35,46 @@ public class CommandExecutor<E> {
         this.chains = new HashMap<>();
     }
 
+    /**
+     * Register an argument node.<br>
+     * The argument node must be a {@link StringNode}.<br>
+     * This method just exists for convenience. See {@link #register(StringNode)}.
+     *
+     * @param argumentNode The argument node
+     */
     public void register(final ArgumentNode<E, ?> argumentNode) {
         if (!(argumentNode instanceof StringNode)) throw new IllegalArgumentException("Register argument node must be a StringArgumentNode");
         this.register((StringNode<E>) argumentNode);
     }
 
+    /**
+     * Register a string argument node.
+     *
+     * @param stringNode The string argument node
+     */
     public void register(final StringNode<E> stringNode) {
         this.chains.entrySet().removeIf(entry -> this.argumentComparator.compare(entry.getKey().name(), stringNode.name()));
         this.chains.put(stringNode, ArgumentChain.buildChains(stringNode));
     }
 
+    /**
+     * Get completions for the given command input.
+     *
+     * @param executor The executor
+     * @param command  The command input
+     * @return The sorted completions
+     */
     public Set<String> completions(final E executor, final String command) {
         return this.completions(executor, new StringReader(command));
     }
 
+    /**
+     * Get completions for the given command input.
+     *
+     * @param executor The executor
+     * @param reader   The string reader
+     * @return The sorted completions
+     */
     public Set<String> completions(final E executor, final StringReader reader) {
         Set<String> completions = new HashSet<>();
         if (!reader.canRead()) {
@@ -94,11 +125,29 @@ public class CommandExecutor<E> {
                 .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
+    /**
+     * Execute the given command input.
+     *
+     * @param executor The executor
+     * @param command  The command input
+     * @param <T>      The return type of the executed command
+     * @return The return value of the executed command
+     * @throws CommandExecutionException If the command execution failed
+     */
     @Nullable
     public <T> T execute(final E executor, final String command) throws CommandExecutionException {
         return this.execute(executor, new StringReader(command));
     }
 
+    /**
+     * Execute the given command input.
+     *
+     * @param executor The executor
+     * @param reader   The string reader
+     * @param <T>      The return type of the executed command
+     * @return The return value of the executed command
+     * @throws CommandExecutionException If the command execution failed
+     */
     @Nullable
     public <T> T execute(final E executor, final StringReader reader) throws CommandExecutionException {
         if (!reader.canRead()) throw new CommandExecutionException("<none>");

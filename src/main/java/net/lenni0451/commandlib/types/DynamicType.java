@@ -3,7 +3,6 @@ package net.lenni0451.commandlib.types;
 import net.lenni0451.commandlib.contexts.ExecutionContext;
 import net.lenni0451.commandlib.exceptions.ArgumentParseException;
 import net.lenni0451.commandlib.utils.StringReader;
-import net.lenni0451.commandlib.utils.interfaces.CompletionsProvider;
 
 import javax.annotation.Nonnull;
 import java.util.Set;
@@ -12,30 +11,15 @@ public class DynamicType<E, T> implements ArgumentType<E, T> {
 
     private final SingleParser<T> singleParser;
     private final BiParser<E, T> biParser;
-    private final CompletionsProvider<E> completionsProvider;
 
     public DynamicType(final SingleParser<T> singleParser) {
         this.singleParser = singleParser;
         this.biParser = null;
-        this.completionsProvider = null;
-    }
-
-    public DynamicType(final SingleParser<T> singleParser, final CompletionsProvider<E> completionsProvider) {
-        this.singleParser = singleParser;
-        this.biParser = null;
-        this.completionsProvider = completionsProvider;
     }
 
     public DynamicType(final BiParser<E, T> biParser) {
         this.singleParser = null;
         this.biParser = biParser;
-        this.completionsProvider = null;
-    }
-
-    public DynamicType(final BiParser<E, T> biParser, final CompletionsProvider<E> completionsProvider) {
-        this.singleParser = null;
-        this.biParser = biParser;
-        this.completionsProvider = completionsProvider;
     }
 
     @Nonnull
@@ -48,7 +32,6 @@ public class DynamicType<E, T> implements ArgumentType<E, T> {
 
     @Override
     public void parseCompletions(Set<String> completions, ExecutionContext<E> executionContext, StringReader stringReader) {
-        if (this.completionsProvider != null) this.completionsProvider.provide(completions, executionContext, stringReader);
     }
 
 

@@ -12,6 +12,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * The string array node can be used to handle an argument the traditional way by only receiving a string array.<br>
+ * This has to be the last node in the tree as it will consume all remaining input.
+ *
+ * @param <E> The type of the executor
+ */
 public class StringArrayNode<E> extends ArgumentNode<E, String[]> {
 
     private final Completor<E> completor;
@@ -76,11 +82,22 @@ public class StringArrayNode<E> extends ArgumentNode<E, String[]> {
     }
 
 
+    /**
+     * The executor interface for the string array node.
+     *
+     * @param <E> The type of the executor
+     */
     @FunctionalInterface
     public interface Executor<E> {
         void execute(final E executor, final String[] args, final ExecutionContext<E> executionContext);
     }
 
+    /**
+     * The completor interface for the string array node.
+     *
+     * @param <E> The type of the executor
+     */
+    @FunctionalInterface
     public interface Completor<E> {
         void complete(final Set<String> completions, final String[] currentArgs, final ExecutionContext<E> executionContext);
     }
