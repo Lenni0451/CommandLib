@@ -106,7 +106,8 @@ public class ChainExecutionException extends Exception {
         RUNTIME_EXCEPTION,
         MISSING_SPACE,
         NO_ARGUMENTS_LEFT,
-        TOO_MANY_ARGUMENTS
+        TOO_MANY_ARGUMENTS,
+        REQUIREMENT_FAILED
     }
 
 }

@@ -153,6 +153,13 @@ public class UITest extends JFrame implements ArgumentBuilder<ExampleExecutor> {
                             }
                         }))
         );
+        this.commandExecutor.register(
+                this.string("noperms")
+                        .then(typed("arg", IntegerType.integer())
+                                .requires(e -> false)
+                                .executes(() -> System.out.println("How did you get here?"))
+                        )
+        );
 
         this.commandExecutor.register(
                 this.string("print").executes(() -> {

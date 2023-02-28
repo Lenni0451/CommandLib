@@ -105,6 +105,7 @@ public class CommandExecutor<E> {
             for (Map.Entry<ArgumentChain<E>, ChainExecutionException> entry : closeChains.entrySet()) {
                 ArgumentChain<E> chain = entry.getKey();
                 ChainExecutionException exception = entry.getValue();
+                if (ChainExecutionException.Reason.REQUIREMENT_FAILED.equals(exception.getReason())) continue;
 
                 CompletionContext completionContext = new CompletionContext();
                 reader.setCursor(exception.getReaderCursor());

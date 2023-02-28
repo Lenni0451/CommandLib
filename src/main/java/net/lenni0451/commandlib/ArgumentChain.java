@@ -125,12 +125,19 @@ public class ArgumentChain<E> {
             ArgumentNode<E, ?> argument = this.arguments.get(i);
             boolean isLast = i == this.arguments.size() - 1;
             try {
+                if (!argument.requirement().test(executionContext)) {
+                    throw new ChainExecutionException(ChainExecutionException.Reason.REQUIREMENT_FAILED, i, cursor, argument.name(), reader.readRemaining());
+                }
                 Object parsedArgument = argument.value(executionContext, reader);
                 out.add(new MatchedArgument(cursor, reader.getString().substring(cursor, reader.getCursor()), parsedArgument));
                 if (!isLast && (!reader.canRead() || reader.read() != ' ')) {
                     throw new ChainExecutionException(ChainExecutionException.Reason.MISSING_SPACE, i, cursor, null, reader.readRemaining());
                 }
                 if (!isLast && !reader.canRead()) {
+                    ArgumentNode<E, ?> nextArgument = this.arguments.get(i + 1);
+                    if (!nextArgument.requirement().test(executionContext)) {
+                        throw new ChainExecutionException(ChainExecutionException.Reason.REQUIREMENT_FAILED, i + 1, cursor, nextArgument.name(), reader.readRemaining());
+                    }
                     String missingArguments = new ArgumentChain<>(this.arguments.subList(i + 1, this.arguments.size())).toString();
                     throw new ChainExecutionException(ChainExecutionException.Reason.NO_ARGUMENTS_LEFT, i + 1, reader.getCursor(), null, missingArguments);
                 } else if (isLast && reader.canRead()) {

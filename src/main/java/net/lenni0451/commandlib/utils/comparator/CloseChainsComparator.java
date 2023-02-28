@@ -50,6 +50,8 @@ public class CloseChainsComparator<E> implements Comparator<Map.Entry<ArgumentCh
                 return 2;
             case TOO_MANY_ARGUMENTS:
                 return 1;
+            case REQUIREMENT_FAILED:
+                return 0;
             case HANDLED_OTHERWISE:
                 if (exception.getCause() instanceof ArgumentParseException) return 3;
                 else if (exception.getCause() instanceof RuntimeException) return 2;

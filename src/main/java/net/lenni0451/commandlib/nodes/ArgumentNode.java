@@ -32,6 +32,7 @@ public abstract class ArgumentNode<E, T> {
     private final List<ArgumentNode<E, ?>> children;
     protected int weight = 0;
     protected boolean providesArgument = true;
+    private Predicate<ExecutionContext<E>> requirement = e -> true;
     private Predicate<T> validator;
     private CompletionsProvider<E> completionsProvider;
     private CommandExceptionHandler<E> exceptionHandler;
@@ -81,6 +82,14 @@ public abstract class ArgumentNode<E, T> {
      */
     public boolean providesArgument() {
         return this.providesArgument;
+    }
+
+    /**
+     * @return The requirement of this argument
+     */
+    @Nonnull
+    public Predicate<ExecutionContext<E>> requirement() {
+        return this.requirement;
     }
 
     /**
@@ -185,6 +194,17 @@ public abstract class ArgumentNode<E, T> {
      */
     public ArgumentNode<E, T> then(final ArgumentNode<E, ?> child) {
         this.children.add(child);
+        return this;
+    }
+
+    /**
+     * Set the requirement of this argument node.
+     *
+     * @param requirement The requirement
+     * @return This argument node
+     */
+    public ArgumentNode<E, T> requires(final Predicate<ExecutionContext<E>> requirement) {
+        this.requirement = requirement;
         return this;
     }
 
