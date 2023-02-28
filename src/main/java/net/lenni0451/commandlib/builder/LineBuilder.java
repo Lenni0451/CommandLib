@@ -7,15 +7,11 @@ import net.lenni0451.commandlib.types.ArgumentType;
 import net.lenni0451.commandlib.utils.Util;
 import net.lenni0451.commandlib.utils.interfaces.CommandExceptionHandler;
 import net.lenni0451.commandlib.utils.interfaces.CompletionsProvider;
-import net.lenni0451.commandlib.utils.interfaces.ValueValidator;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
+import java.util.function.*;
 
 /**
  * Easily build a line of arguments into an {@link ArgumentNode}.
@@ -75,7 +71,7 @@ public class LineBuilder<E> {
      * @return The line builder
      * @throws IllegalStateException If no argument was added before
      */
-    public <T> LineBuilder<E> validator(@Nullable final ValueValidator<T> validator) {
+    public <T> LineBuilder<E> validator(@Nullable final Predicate<T> validator) {
         if (this.nodes.isEmpty()) throw new IllegalStateException("No argument was added before");
         this.nodes.get(this.nodes.size() - 1).validator = Util.cast(validator);
         return this;
@@ -199,7 +195,7 @@ public class LineBuilder<E> {
         private final String name;
         private final String description;
         private final ArgumentType<E, T> type;
-        private ValueValidator<T> validator;
+        private Predicate<T> validator;
         private CompletionsProvider<E> completionsProvider;
         private CommandExceptionHandler<E> exceptionHandler;
         private T defaultValue;

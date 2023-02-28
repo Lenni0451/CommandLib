@@ -7,7 +7,6 @@ import net.lenni0451.commandlib.exceptions.HandledException;
 import net.lenni0451.commandlib.utils.StringReader;
 import net.lenni0451.commandlib.utils.interfaces.CommandExceptionHandler;
 import net.lenni0451.commandlib.utils.interfaces.CompletionsProvider;
-import net.lenni0451.commandlib.utils.interfaces.ValueValidator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -17,6 +16,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 /**
@@ -32,7 +32,7 @@ public abstract class ArgumentNode<E, T> {
     private final List<ArgumentNode<E, ?>> children;
     protected int weight = 0;
     protected boolean providesArgument = true;
-    private ValueValidator<T> validator;
+    private Predicate<T> validator;
     private CompletionsProvider<E> completionsProvider;
     private CommandExceptionHandler<E> exceptionHandler;
     private Function<ExecutionContext<E>, ?> executor;
@@ -87,7 +87,7 @@ public abstract class ArgumentNode<E, T> {
      * @return The validator of this argument
      */
     @Nullable
-    public ValueValidator<T> validator() {
+    public Predicate<T> validator() {
         return this.validator;
     }
 
@@ -136,7 +136,7 @@ public abstract class ArgumentNode<E, T> {
             }
             throw e;
         }
-        if (this.validator != null && !this.validator.validate(value)) throw ArgumentParseException.namedReason(this.name, "Invalid value");
+        if (this.validator != null && !this.validator.test(value)) throw ArgumentParseException.namedReason(this.name, "Invalid value");
         return value;
     }
 
@@ -194,7 +194,7 @@ public abstract class ArgumentNode<E, T> {
      * @param validator The validator
      * @return This argument node
      */
-    public ArgumentNode<E, T> validator(@Nullable final ValueValidator<T> validator) {
+    public ArgumentNode<E, T> validator(@Nullable final Predicate<T> validator) {
         this.validator = validator;
         return this;
     }
