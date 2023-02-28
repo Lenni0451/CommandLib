@@ -76,4 +76,22 @@ public class Util {
         set.addAll(prepended);
     }
 
+    /**
+     * Beautify the name of an enum value.<br>
+     * Example: "MY_ENUM_VALUE" -> "My Enum Value"
+     *
+     * @param value     The enum value
+     * @param addSpaces If spaces should be added
+     * @return The beautified name
+     */
+    public static String beautify(final Enum<?> value, final boolean addSpaces) {
+        String[] split = value.name().split("_");
+        StringBuilder builder = new StringBuilder();
+        for (String s : split) {
+            builder.append(s.substring(0, 1).toUpperCase()).append(s.substring(1).toLowerCase());
+            if (addSpaces) builder.append(" ");
+        }
+        return builder.toString().trim();
+    }
+
 }
