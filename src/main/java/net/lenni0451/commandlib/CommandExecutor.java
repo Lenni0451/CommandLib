@@ -83,7 +83,7 @@ public class CommandExecutor<E> {
         } else {
             ExecutionContext<E> executionContext = new ExecutionContext<>(this.argumentComparator, executor, false);
             Map<ArgumentChain<E>, ChainExecutionException> closeChains = new HashMap<>();
-            Map<ArgumentChain<E>, List<ArgumentChain.MatchedArgument>> matchingChains = this.findMatchingChains(closeChains, true, executionContext, reader);
+            Map<ArgumentChain<E>, List<ArgumentChain.MatchedArgument>> matchingChains = this.findMatchingChains(closeChains, executionContext, reader);
 
             for (Map.Entry<ArgumentChain<E>, List<ArgumentChain.MatchedArgument>> entry : matchingChains.entrySet()) {
                 if (entry.getValue().isEmpty()) continue;
@@ -159,7 +159,7 @@ public class CommandExecutor<E> {
         if (!reader.canRead()) throw new CommandExecutionException("<none>");
         ExecutionContext<E> executionContext = new ExecutionContext<>(this.argumentComparator, executor, true);
         Map<ArgumentChain<E>, ChainExecutionException> closeChains = new HashMap<>();
-        Map<ArgumentChain<E>, List<ArgumentChain.MatchedArgument>> matchingChains = this.findMatchingChains(closeChains, false, executionContext, reader);
+        Map<ArgumentChain<E>, List<ArgumentChain.MatchedArgument>> matchingChains = this.findMatchingChains(closeChains, executionContext, reader);
         try {
             return this.executeChain(matchingChains, executionContext, reader);
         } catch (CommandExecutionException e) {
@@ -171,20 +171,26 @@ public class CommandExecutor<E> {
         }
     }
 
-    private Map<ArgumentChain<E>, List<ArgumentChain.MatchedArgument>> findMatchingChains(final Map<ArgumentChain<E>, ChainExecutionException> closeChains, final boolean closeMatchLiteral, final ExecutionContext<E> executionContext, final StringReader reader) {
+    private Map<ArgumentChain<E>, List<ArgumentChain.MatchedArgument>> findMatchingChains(final Map<ArgumentChain<E>, ChainExecutionException> closeChains, final ExecutionContext<E> executionContext, final StringReader reader) {
         Map<ArgumentChain<E>, List<ArgumentChain.MatchedArgument>> out = new HashMap<>();
+        int cursor = reader.getCursor();
         for (List<ArgumentChain<E>> chains : this.chains.values()) {
             for (ArgumentChain<E> chain : chains) {
-                int cursor = reader.getCursor();
+                reader.setCursor(cursor);
                 try {
                     List<ArgumentChain.MatchedArgument> arguments = chain.parse(executionContext, reader);
                     out.put(chain, arguments);
                 } catch (ChainExecutionException e) {
-                    if (e.getExecutionIndex() != 0 || closeMatchLiteral) closeChains.put(chain, e);
+                    if (e.getExecutionIndex() == 0) {
+                        reader.setCursor(e.getReaderCursor());
+                        String word = reader.readWordOrString();
+                        if (!this.argumentComparator.startsWith(chain.getArgument(0).name(), word)) continue;
+                    }
+                    closeChains.put(chain, e);
                 }
-                reader.setCursor(cursor);
             }
         }
+        reader.setCursor(cursor);
         return out;
     }
 
