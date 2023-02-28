@@ -1,5 +1,6 @@
 import net.lenni0451.commandlib.ArgumentChain;
 import net.lenni0451.commandlib.CommandExecutor;
+import net.lenni0451.commandlib.Completion;
 import net.lenni0451.commandlib.builder.ArgumentBuilder;
 import net.lenni0451.commandlib.builder.LineBuilder;
 import net.lenni0451.commandlib.contexts.ExecutionContext;
@@ -179,9 +180,9 @@ public class UITest extends JFrame implements ArgumentBuilder<ExampleExecutor> {
     private void onTextChange() {
         try {
             String input = this.input.getText();
-            Set<String> completions = this.commandExecutor.completions(ExampleExecutor.INSTANCE, input);
+            Set<Completion> completions = this.commandExecutor.completions(ExampleExecutor.INSTANCE, input);
             this.setOutput(
-                    Arrays.toString(completions.stream().toArray(String[]::new)),
+                    Arrays.toString(completions.stream().map(c -> c.getStart() + ":" + c.getCompletion()).toArray(String[]::new)),
                     ""
             );
 

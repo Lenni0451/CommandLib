@@ -1,5 +1,7 @@
 package net.lenni0451.commandlib.utils.comparator;
 
+import net.lenni0451.commandlib.Completion;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Comparator;
@@ -11,7 +13,7 @@ import java.util.regex.Pattern;
  * A comparator to sort command completions.<br>
  * Numbers are sorted first, then the rest is sorted by {@link Comparator#naturalOrder()}.
  */
-public class CompletionsComparator implements Comparator<String> {
+public class CompletionsComparator implements Comparator<Completion> {
 
     private static final Pattern INT_PATTERN = Pattern.compile("^[+-]?\\d+$");
     private static final Pattern DECIMAL_PATTERN = Pattern.compile("^[+-]?(?:\\d+(\\.\\d*)?|\\d*\\.\\d+)$");
@@ -28,10 +30,10 @@ public class CompletionsComparator implements Comparator<String> {
     }
 
     @Override
-    public int compare(String s1, String s2) {
-        Integer result = this.compareNumber(s1, s2);
+    public int compare(Completion c1, Completion c2) {
+        Integer result = this.compareNumber(c1.getCompletion(), c2.getCompletion());
         if (result != null) return result;
-        return this.argumentComparator.compareTo(s1, s2);
+        return this.argumentComparator.compareTo(c1.getCompletion(), c2.getCompletion());
     }
 
     private Integer compareNumber(final String s1, final String s2) {

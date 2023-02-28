@@ -64,7 +64,7 @@ public class CommandExecutor<E> {
      * @param command  The command input
      * @return The sorted completions
      */
-    public Set<String> completions(final E executor, final String command) {
+    public Set<Completion> completions(final E executor, final String command) {
         return this.completions(executor, new StringReader(command));
     }
 
@@ -75,10 +75,10 @@ public class CommandExecutor<E> {
      * @param reader   The string reader
      * @return The sorted completions
      */
-    public Set<String> completions(final E executor, final StringReader reader) {
-        Set<String> completions = new HashSet<>();
+    public Set<Completion> completions(final E executor, final StringReader reader) {
+        Set<Completion> completions = new HashSet<>();
         if (!reader.canRead()) {
-            completions.addAll(this.chains.keySet().stream().map(StringNode::name).collect(Collectors.toList()));
+            completions.addAll(this.chains.keySet().stream().map(StringNode::name).map(n -> new Completion(0, n)).collect(Collectors.toList()));
         } else {
             ExecutionContext<E> executionContext = new ExecutionContext<>(this.argumentComparator, executor, false);
             Map<ArgumentChain<E>, ChainExecutionException> closeChains = new HashMap<>();
@@ -96,22 +96,26 @@ public class CommandExecutor<E> {
                 String check = reader.peekRemaining();
                 Set<String> argumentCompletions = argument.completions(completionContext, executionContext, reader);
                 for (String completion : argumentCompletions) {
-                    if (this.argumentComparator.startsWith(completion, check)) completions.add(completion.substring(completionContext.getCompletionsTrim()));
+                    if (this.argumentComparator.startsWith(completion, check)) {
+                        int trim = completionContext.getCompletionsTrim();
+                        completions.add(new Completion(match.getCursor() + trim, completion.substring(trim)));
+                    }
                 }
             }
             for (Map.Entry<ArgumentChain<E>, ChainExecutionException> entry : closeChains.entrySet()) {
                 ArgumentChain<E> chain = entry.getKey();
                 ChainExecutionException exception = entry.getValue();
-                int argOffset = 0;
-                if (ChainExecutionException.Reason.MISSING_SPACE.equals(exception.getReason())) argOffset = 1;
 
                 CompletionContext completionContext = new CompletionContext();
                 reader.setCursor(exception.getReaderCursor());
-                ArgumentNode<E, ?> argument = chain.getArgument(exception.getExecutionIndex() - argOffset);
+                ArgumentNode<E, ?> argument = chain.getArgument(exception.getExecutionIndex());
                 String check = reader.peekRemaining();
                 Set<String> argumentCompletions = argument.completions(completionContext, executionContext, reader);
                 for (String completion : argumentCompletions) {
-                    if (this.argumentComparator.startsWith(completion, check)) completions.add(completion.substring(completionContext.getCompletionsTrim()));
+                    if (this.argumentComparator.startsWith(completion, check)) {
+                        int trim = completionContext.getCompletionsTrim();
+                        completions.add(new Completion(exception.getReaderCursor() + trim, completion.substring(trim)));
+                    }
                 }
             }
         }
@@ -119,7 +123,7 @@ public class CommandExecutor<E> {
                 .stream()
                 .sorted(new CompletionsComparator(this.argumentComparator))
                 .map(s -> {
-                    if (s.contains(" ")) return "\"" + s.replace("\\", "\\\\").replace("\"", "\\\"") + "\"";
+                    if (s.getCompletion().contains(" ")) return new Completion(s.getStart(), "\"" + s.getCompletion().replace("\\", "\\\\").replace("\"", "\\\"") + "\"");
                     else return s;
                 })
                 .collect(Collectors.toCollection(LinkedHashSet::new));
