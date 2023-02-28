@@ -12,6 +12,7 @@ import net.lenni0451.commandlib.utils.comparator.ArgumentComparator;
 import net.lenni0451.commandlib.utils.comparator.CloseChainsComparator;
 import net.lenni0451.commandlib.utils.comparator.CompletionsComparator;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -64,7 +65,7 @@ public class CommandExecutor<E> {
      * @param command  The command input
      * @return The sorted completions
      */
-    public Set<Completion> completions(final E executor, final String command) {
+    public Set<Completion> completions(@Nonnull final E executor, @Nonnull final String command) {
         return this.completions(executor, new StringReader(command));
     }
 
@@ -75,7 +76,7 @@ public class CommandExecutor<E> {
      * @param reader   The string reader
      * @return The sorted completions
      */
-    public Set<Completion> completions(final E executor, final StringReader reader) {
+    public Set<Completion> completions(@Nonnull final E executor, @Nonnull final StringReader reader) {
         Set<Completion> completions = new HashSet<>();
         if (!reader.canRead()) {
             completions.addAll(this.chains.keySet().stream().map(StringNode::name).map(n -> new Completion(0, n)).collect(Collectors.toList()));
@@ -140,7 +141,7 @@ public class CommandExecutor<E> {
      * @throws CommandExecutionException If the command execution failed
      */
     @Nullable
-    public <T> T execute(final E executor, final String command) throws CommandExecutionException {
+    public <T> T execute(@Nonnull final E executor, @Nonnull final String command) throws CommandExecutionException {
         return this.execute(executor, new StringReader(command));
     }
 
@@ -154,7 +155,7 @@ public class CommandExecutor<E> {
      * @throws CommandExecutionException If the command execution failed
      */
     @Nullable
-    public <T> T execute(final E executor, final StringReader reader) throws CommandExecutionException {
+    public <T> T execute(@Nonnull final E executor, @Nonnull final StringReader reader) throws CommandExecutionException {
         if (!reader.canRead()) throw new CommandExecutionException("<none>");
         ExecutionContext<E> executionContext = new ExecutionContext<>(this.argumentComparator, executor, true);
         Map<ArgumentChain<E>, ChainExecutionException> closeChains = new HashMap<>();

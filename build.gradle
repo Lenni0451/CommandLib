@@ -16,7 +16,7 @@ repositories {
 }
 
 dependencies {
-    implementation "com.google.code.findbugs:jsr305:3.0.2"
+    compileOnly "com.google.code.findbugs:jsr305:3.0.2"
 }
 
 java {
@@ -63,7 +63,7 @@ publishing {
 
             pom {
                 name = rootProject.name
-                description = "A command lib with a simple and powerfull api"
+                description = "A command lib with a simple and powerful API"
                 url = "https://github.com/Lenni0451/CommandLib"
                 licenses {
                     license {
