@@ -41,6 +41,11 @@ public class EnumType<E, T extends Enum<T>> implements ArgumentType<E, T> {
         }
     }
 
+    @Override
+    public int getWeight() {
+        return 75;
+    }
+
     @Nonnull
     @Override
     public T parseValue(ExecutionContext<E> executionContext, StringReader stringReader) throws ArgumentParseException, RuntimeException {
