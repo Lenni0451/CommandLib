@@ -44,11 +44,11 @@ public class CloseChainsComparator<E> implements Comparator<Map.Entry<ArgumentCh
             case MISSING_SPACE:
             case NO_ARGUMENTS_LEFT:
                 return 4;
-            case ARGUMENT_PARSE_EXCEPTION:
-                return 3;
-            case RUNTIME_EXCEPTION:
-                return 2;
             case TOO_MANY_ARGUMENTS:
+                return 3;
+            case ARGUMENT_PARSE_EXCEPTION:
+                return 2;
+            case RUNTIME_EXCEPTION:
                 return 1;
             case REQUIREMENT_FAILED:
                 return 0;
