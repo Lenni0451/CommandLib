@@ -78,7 +78,7 @@ public class Util {
 
     /**
      * Beautify the name of an enum value.<br>
-     * Example: "MY_ENUM_VALUE" -> "My Enum Value"
+     * Example: "MY_ENUM_VALUE" -{@literal >} "My Enum Value"
      *
      * @param value     The enum value
      * @param addSpaces If spaces should be added
