@@ -37,6 +37,17 @@ public class LineBuilder<E> {
     }
 
     /**
+     * Add an existing node to the line.
+     *
+     * @param node The node
+     * @return The line builder
+     */
+    public LineBuilder<E> node(final ArgumentNode<E, ?> node) {
+        this.nodes.add(new LineNode<>(node));
+        return this;
+    }
+
+    /**
      * Start building an argument and add it to the line.
      *
      * @param name The name of the argument
@@ -169,16 +180,16 @@ public class LineBuilder<E> {
         }));
     }
 
-    private <R> TypedNode<E, R> build(final BiConsumer<List<LineNode<E, R>>, TypedNode<E, R>> executorAppender) {
+    private <R> ArgumentNode<E, R> build(final BiConsumer<List<LineNode<E, R>>, ArgumentNode<E, R>> executorAppender) {
         if (this.nodes.isEmpty()) throw new IllegalStateException("No arguments defined");
 
-        TypedNode<E, R> root = null;
-        TypedNode<E, R> current = null;
+        ArgumentNode<E, R> root = null;
+        ArgumentNode<E, R> current = null;
         for (int i = 0; i < this.nodes.size(); i++) {
             LineNode<E, R> node = (LineNode<E, R>) this.nodes.get(i);
             LineNode<E, R> next = i + 1 < this.nodes.size() ? (LineNode<E, R>) this.nodes.get(i + 1) : null;
 
-            TypedNode<E, R> newNode = node.toArgumentNode();
+            ArgumentNode<E, R> newNode = node.toArgumentNode();
             if (next == null || next.defaultValue != null) {
                 List<LineNode<E, R>> defaults = Util.cast(this.nodes.subList(i + 1, this.nodes.size()));
                 executorAppender.accept(defaults, newNode);
@@ -192,6 +203,7 @@ public class LineBuilder<E> {
 
 
     private static class LineNode<E, T> {
+        private final ArgumentNode<E, T> node;
         private final String name;
         private final String description;
         private final ArgumentType<E, T> type;
@@ -200,14 +212,24 @@ public class LineBuilder<E> {
         private CommandExceptionHandler<E> exceptionHandler;
         private T defaultValue;
 
+        private LineNode(final ArgumentNode<E, T> node) {
+            this.node = node;
+            this.name = null;
+            this.description = null;
+            this.type = null;
+        }
+
         private LineNode(final String name, @Nullable final String description, final ArgumentType<E, T> argumentType) {
+            this.node = null;
             this.name = name;
             this.description = description;
             this.type = argumentType;
         }
 
-        private TypedNode<E, T> toArgumentNode() {
-            TypedNode<E, T> node = new TypedNode<>(this.name, this.description, this.type);
+        private ArgumentNode<E, T> toArgumentNode() {
+            ArgumentNode<E, T> node;
+            if (this.node == null) node = new TypedNode<>(this.name, this.description, this.type);
+            else node = this.node;
             node
                     .validator(this.validator)
                     .suggestions(this.completionsProvider)

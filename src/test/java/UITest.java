@@ -122,6 +122,14 @@ public class UITest extends JFrame implements ArgumentBuilder<ExampleExecutor> {
                     System.out.println(c.getArgument("arg1") + " " + c.getArgument("arg2"));
                 }));
         this.commandExecutor.register(
+                this.line()
+                        .node(this.string("doline"))
+                        .arg("int", IntegerType.integer()).defaultValue(100)
+                        .executes(ctx -> {
+                            System.out.println("Int: " + ctx.getArgument("int"));
+                        })
+        );
+        this.commandExecutor.register(
                 this.string("valtest")
                         .then(this.typed("val", StringType.string()).validator(v -> v.length() == 5).executes(c -> {
                             System.out.println("Val: " + c.getArgument("val"));
