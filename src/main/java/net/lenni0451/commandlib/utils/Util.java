@@ -1,5 +1,6 @@
 package net.lenni0451.commandlib.utils;
 
+import net.lenni0451.commandlib.utils.interfaces.ArgumentRequirement;
 import net.lenni0451.commandlib.utils.interfaces.ThrowingSupplier;
 
 import java.util.*;
@@ -92,6 +93,26 @@ public class Util {
             if (addSpaces) builder.append(" ");
         }
         return builder.toString().trim();
+    }
+
+    /**
+     * And chain multiple argument requirements.<br>
+     * If one of the requirements fails the remaining requirements will not be checked.
+     *
+     * @param predicates The predicates to check
+     * @param <E>        The type of the predicate
+     * @return The predicate
+     */
+    public static <E> ArgumentRequirement<E> and(final ArgumentRequirement<E>... predicates) {
+        return executionContext -> {
+            for (ArgumentRequirement<E> requirement : predicates) {
+                if (!requirement.test(executionContext)) {
+                    requirement.onExecuteFail(executionContext);
+                    return false;
+                }
+            }
+            return true;
+        };
     }
 
 }

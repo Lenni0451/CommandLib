@@ -5,6 +5,7 @@ import net.lenni0451.commandlib.contexts.ExecutionContext;
 import net.lenni0451.commandlib.exceptions.ArgumentParseException;
 import net.lenni0451.commandlib.exceptions.HandledException;
 import net.lenni0451.commandlib.utils.StringReader;
+import net.lenni0451.commandlib.utils.interfaces.ArgumentRequirement;
 import net.lenni0451.commandlib.utils.interfaces.CommandExceptionHandler;
 import net.lenni0451.commandlib.utils.interfaces.CompletionsProvider;
 
@@ -32,7 +33,7 @@ public abstract class ArgumentNode<E, T> {
     private final List<ArgumentNode<E, ?>> children;
     protected int weight = 0;
     protected boolean providesArgument = true;
-    private Predicate<ExecutionContext<E>> requirement = e -> true;
+    private ArgumentRequirement<E> requirement = e -> true;
     private Predicate<T> validator;
     private CompletionsProvider<E> completionsProvider;
     private CommandExceptionHandler<E> exceptionHandler;
@@ -88,7 +89,7 @@ public abstract class ArgumentNode<E, T> {
      * @return The requirement of this argument
      */
     @Nonnull
-    public Predicate<ExecutionContext<E>> requirement() {
+    public ArgumentRequirement<E> requirement() {
         return this.requirement;
     }
 
@@ -203,7 +204,7 @@ public abstract class ArgumentNode<E, T> {
      * @param requirement The requirement
      * @return This argument node
      */
-    public ArgumentNode<E, T> requires(final Predicate<ExecutionContext<E>> requirement) {
+    public ArgumentNode<E, T> requires(final ArgumentRequirement<E> requirement) {
         this.requirement = requirement;
         return this;
     }
