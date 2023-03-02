@@ -106,10 +106,7 @@ public class Util {
     public static <E> ArgumentRequirement<E> and(final ArgumentRequirement<E>... predicates) {
         return executionContext -> {
             for (ArgumentRequirement<E> requirement : predicates) {
-                if (!requirement.test(executionContext)) {
-                    requirement.onExecuteFail(executionContext);
-                    return false;
-                }
+                if (!requirement.test(executionContext)) return false;
             }
             return true;
         };

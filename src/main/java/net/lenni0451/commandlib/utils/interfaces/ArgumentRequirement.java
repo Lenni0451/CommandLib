@@ -19,12 +19,4 @@ public interface ArgumentRequirement<E> {
      */
     boolean test(final ExecutionContext<E> executionContext);
 
-    /**
-     * Called if the command execution fails.
-     *
-     * @param executionContext The execution context
-     */
-    default void onExecuteFail(final ExecutionContext<E> executionContext) {
-    }
-
 }

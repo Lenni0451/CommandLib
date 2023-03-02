@@ -126,7 +126,6 @@ public class ArgumentChain<E> {
             boolean isLast = i == this.arguments.size() - 1;
             try {
                 if (!argument.requirement().test(executionContext)) {
-                    if (executionContext.isExecution()) argument.requirement().onExecuteFail(executionContext);
                     throw new ChainExecutionException(ChainExecutionException.Reason.REQUIREMENT_FAILED, i, cursor, argument.name(), reader.readRemaining());
                 }
                 Object parsedArgument = argument.value(executionContext, reader);
@@ -137,7 +136,6 @@ public class ArgumentChain<E> {
                 if (!isLast && !reader.canRead()) {
                     ArgumentNode<E, ?> nextArgument = this.arguments.get(i + 1);
                     if (!nextArgument.requirement().test(executionContext)) {
-                        if (executionContext.isExecution()) nextArgument.requirement().onExecuteFail(executionContext);
                         throw new ChainExecutionException(ChainExecutionException.Reason.REQUIREMENT_FAILED, i + 1, cursor, nextArgument.name(), reader.readRemaining());
                     }
                     String missingArguments = new ArgumentChain<>(this.arguments.subList(i + 1, this.arguments.size())).toString();
