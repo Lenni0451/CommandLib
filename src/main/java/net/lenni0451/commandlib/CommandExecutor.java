@@ -97,10 +97,8 @@ public class CommandExecutor<E> {
                 String check = reader.peekRemaining();
                 Set<String> argumentCompletions = argument.completions(completionContext, executionContext, reader);
                 for (String completion : argumentCompletions) {
-                    if (this.argumentComparator.startsWith(completion, check)) {
-                        int trim = completionContext.getCompletionsTrim();
-                        completions.add(new Completion(match.getCursor() + trim, completion.substring(trim)));
-                    }
+                    int trim = completionContext.getCompletionsTrim();
+                    if (this.argumentComparator.startsWith(completion, check.substring(trim))) completions.add(new Completion(match.getCursor() + trim, completion));
                 }
             }
             for (Map.Entry<ArgumentChain<E>, ChainExecutionException> entry : closeChains.entrySet()) {
@@ -114,10 +112,8 @@ public class CommandExecutor<E> {
                 String check = reader.peekRemaining();
                 Set<String> argumentCompletions = argument.completions(completionContext, executionContext, reader);
                 for (String completion : argumentCompletions) {
-                    if (this.argumentComparator.startsWith(completion, check)) {
-                        int trim = completionContext.getCompletionsTrim();
-                        completions.add(new Completion(exception.getReaderCursor() + trim, completion.substring(trim)));
-                    }
+                    int trim = completionContext.getCompletionsTrim();
+                    if (this.argumentComparator.startsWith(completion, check.substring(trim))) completions.add(new Completion(exception.getReaderCursor() + trim, completion));
                 }
             }
         }

@@ -4,7 +4,6 @@ import net.lenni0451.commandlib.contexts.CompletionContext;
 import net.lenni0451.commandlib.contexts.ExecutionContext;
 import net.lenni0451.commandlib.exceptions.ArgumentParseException;
 import net.lenni0451.commandlib.utils.StringReader;
-import net.lenni0451.commandlib.utils.Util;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -77,7 +76,6 @@ public class StringArrayNode<E> extends ArgumentNode<E, String[]> {
             prefix = stringReader.getString().substring(start, lastCursor);
         }
         this.completor.complete(completions, args.toArray(new String[0]), executionContext);
-        Util.prepend(completions, prefix);
         completionContext.setCompletionsTrim(prefix.length());
     }
 

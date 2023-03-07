@@ -5,7 +5,6 @@ import net.lenni0451.commandlib.contexts.ExecutionContext;
 import net.lenni0451.commandlib.exceptions.ArgumentParseException;
 import net.lenni0451.commandlib.types.ArgumentType;
 import net.lenni0451.commandlib.utils.StringReader;
-import net.lenni0451.commandlib.utils.Util;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -73,7 +72,6 @@ public class ListNode<E, T> extends ArgumentNode<E, List<T>> {
         if (!endsWithSpace) prefix = stringReader.getString().substring(start, lastCursor);
         stringReader.setCursor(lastCursor);
         this.type.parseCompletions(completions, executionContext, new StringReader(prefix));
-        Util.prepend(completions, prefix);
         completionContext.setCompletionsTrim(prefix.length());
     }
 
