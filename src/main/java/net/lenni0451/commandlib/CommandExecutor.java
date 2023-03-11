@@ -82,13 +82,12 @@ public class CommandExecutor<E> {
             completions.addAll(this.chains.keySet().stream().map(StringNode::name).map(n -> new Completion(0, n)).collect(Collectors.toList()));
         } else {
             ExecutionContext<E> executionContext = new ExecutionContext<>(this.argumentComparator, executor, false);
-            Map<ArgumentChain<E>, ChainExecutionException> closeChains = new HashMap<>();
-            Map<ArgumentChain<E>, List<ArgumentChain.MatchedArgument>> matchingChains = this.findMatchingChains(closeChains, executionContext, reader);
+            ParseResult<E> parseResult = this.parseChains(executionContext, reader);
 
-            for (Map.Entry<ArgumentChain<E>, List<ArgumentChain.MatchedArgument>> entry : matchingChains.entrySet()) {
-                if (entry.getValue().isEmpty()) continue;
-                ArgumentChain<E> chain = entry.getKey();
-                List<ArgumentChain.MatchedArgument> matchedArguments = entry.getValue();
+            for (ParseResult.ParsedChain<E> parsedChain : parseResult.getParsedChains()) {
+                if (parsedChain.getMatchedArguments().isEmpty()) continue;
+                ArgumentChain<E> chain = parsedChain.getArgumentChain();
+                List<ArgumentChain.MatchedArgument> matchedArguments = parsedChain.getMatchedArguments();
 
                 CompletionContext completionContext = new CompletionContext();
                 ArgumentChain.MatchedArgument match = matchedArguments.get(matchedArguments.size() - 1);
@@ -101,9 +100,9 @@ public class CommandExecutor<E> {
                     if (this.argumentComparator.startsWith(completion, check.substring(trim))) completions.add(new Completion(match.getCursor() + trim, completion));
                 }
             }
-            for (Map.Entry<ArgumentChain<E>, ChainExecutionException> entry : closeChains.entrySet()) {
-                ArgumentChain<E> chain = entry.getKey();
-                ChainExecutionException exception = entry.getValue();
+            for (ParseResult.FailedChain<E> failedChain : parseResult.getFailedChains()) {
+                ArgumentChain<E> chain = failedChain.getArgumentChain();
+                ChainExecutionException exception = failedChain.getExecutionException();
                 if (ChainExecutionException.Reason.REQUIREMENT_FAILED.equals(exception.getReason())) continue;
 
                 CompletionContext completionContext = new CompletionContext();
@@ -154,60 +153,60 @@ public class CommandExecutor<E> {
     public <T> T execute(@Nonnull final E executor, @Nonnull final StringReader reader) throws CommandExecutionException {
         if (!reader.canRead()) throw new CommandExecutionException("<none>");
         ExecutionContext<E> executionContext = new ExecutionContext<>(this.argumentComparator, executor, true);
-        Map<ArgumentChain<E>, ChainExecutionException> closeChains = new HashMap<>();
-        Map<ArgumentChain<E>, List<ArgumentChain.MatchedArgument>> matchingChains = this.findMatchingChains(closeChains, executionContext, reader);
+        ParseResult<E> parseResult = this.parseChains(executionContext, reader);
         try {
-            return this.executeChain(matchingChains, executionContext, reader);
+            return this.executeChain(parseResult, executionContext, reader);
         } catch (CommandExecutionException e) {
-            if (closeChains.isEmpty()) throw e;
+            if (parseResult.getFailedChains().isEmpty()) throw e;
 
-            closeChains = CloseChainsComparator.getClosest(closeChains);
-            closeChains = Util.sortMap(closeChains, (o1, o2) -> this.compareChains(o1.getKey(), o2.getKey()));
+            List<ParseResult.FailedChain<E>> closeChains = CloseChainsComparator.getClosest(parseResult.getFailedChains());
+            closeChains.sort((f1, f2) -> this.compareChains(f1.getArgumentChain(), f2.getArgumentChain()));
             throw new CommandExecutionException(e.getCommand(), Util.cast(closeChains));
         }
     }
 
-    private Map<ArgumentChain<E>, List<ArgumentChain.MatchedArgument>> findMatchingChains(final Map<ArgumentChain<E>, ChainExecutionException> closeChains, final ExecutionContext<E> executionContext, final StringReader reader) {
-        Map<ArgumentChain<E>, List<ArgumentChain.MatchedArgument>> out = new HashMap<>();
+    private ParseResult<E> parseChains(final ExecutionContext<E> executionContext, final StringReader reader) {
+        List<ParseResult.ParsedChain<E>> parsedChains = new ArrayList<>();
+        List<ParseResult.FailedChain<E>> failedChains = new ArrayList<>();
         int cursor = reader.getCursor();
         for (List<ArgumentChain<E>> chains : this.chains.values()) {
             for (ArgumentChain<E> chain : chains) {
                 reader.setCursor(cursor);
                 try {
-                    List<ArgumentChain.MatchedArgument> arguments = chain.parse(executionContext, reader);
-                    out.put(chain, arguments);
+                    List<ArgumentChain.MatchedArgument> matchedArguments = chain.parse(executionContext, reader);
+                    parsedChains.add(new ParseResult.ParsedChain<>(chain, matchedArguments));
                 } catch (ChainExecutionException e) {
                     if (e.getExecutionIndex() == 0) {
                         reader.setCursor(e.getReaderCursor());
                         String word = reader.readWordOrString();
                         if (!this.argumentComparator.startsWith(chain.getArgument(0).name(), word)) continue;
                     }
-                    closeChains.put(chain, e);
+                    failedChains.add(new ParseResult.FailedChain<>(chain, e));
                 }
             }
         }
         reader.setCursor(cursor);
-        return out;
+        return new ParseResult<>(parsedChains, failedChains);
     }
 
-    private <T> T executeChain(final Map<ArgumentChain<E>, List<ArgumentChain.MatchedArgument>> chains, final ExecutionContext<E> executionContext, final StringReader reader) throws CommandExecutionException {
-        if (chains.isEmpty()) {
+    private <T> T executeChain(final ParseResult<E> parseResult, final ExecutionContext<E> executionContext, final StringReader reader) throws CommandExecutionException {
+        if (parseResult.getParsedChains().isEmpty()) {
             throw new CommandExecutionException(reader.readWordOrString());
-        } else if (chains.size() == 1) {
-            ArgumentChain<E> chain = chains.keySet().iterator().next();
-            List<ArgumentChain.MatchedArgument> arguments = chains.get(chain);
-            chain.populateArguments(executionContext, arguments);
-            return (T) chain.getExecutor().apply(executionContext);
+        } else if (parseResult.getParsedChains().size() == 1) {
+            ParseResult.ParsedChain<E> chain = parseResult.getParsedChains().get(0);
+            List<ArgumentChain.MatchedArgument> arguments = chain.getMatchedArguments();
+            chain.getArgumentChain().populateArguments(executionContext, arguments);
+            return (T) chain.getArgumentChain().getExecutor().apply(executionContext);
         } else {
-            Map<ArgumentChain<E>, List<ArgumentChain.MatchedArgument>> bestChainMap = new HashMap<>();
-            ArgumentChain<E> bestChain = this.findBestChain(chains.keySet());
-            bestChainMap.put(bestChain, chains.get(bestChain));
-            return this.executeChain(bestChainMap, executionContext, reader);
+            List<ParseResult.ParsedChain<E>> parsedChains = new ArrayList<>();
+            ParseResult.ParsedChain<E> bestChain = this.findBestChain(parseResult.getParsedChains());
+            parsedChains.add(bestChain);
+            return this.executeChain(new ParseResult<>(parsedChains, parseResult.getFailedChains()), executionContext, reader);
         }
     }
 
-    private ArgumentChain<E> findBestChain(final Set<ArgumentChain<E>> chains) {
-        return chains.stream().max(this::compareChains).orElseThrow(IllegalStateException::new);
+    private ParseResult.ParsedChain<E> findBestChain(final List<ParseResult.ParsedChain<E>> chains) {
+        return chains.stream().max((p1, p2) -> this.compareChains(p1.getArgumentChain(), p2.getArgumentChain())).orElseThrow(IllegalStateException::new);
     }
 
     private int compareChains(final ArgumentChain<E> chain1, final ArgumentChain<E> chain2) {

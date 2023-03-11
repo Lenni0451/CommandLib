@@ -1,10 +1,7 @@
-import net.lenni0451.commandlib.ArgumentChain;
 import net.lenni0451.commandlib.CommandExecutor;
+import net.lenni0451.commandlib.ParseResult;
 import net.lenni0451.commandlib.builder.ArgumentBuilder;
-import net.lenni0451.commandlib.exceptions.ChainExecutionException;
 import net.lenni0451.commandlib.exceptions.CommandExecutionException;
-
-import java.util.Map;
 
 public class SortTest implements ArgumentBuilder<ExampleExecutor> {
 
@@ -22,9 +19,9 @@ public class SortTest implements ArgumentBuilder<ExampleExecutor> {
             commandExecutor.execute(ExampleExecutor.INSTANCE, "test c");
         } catch (CommandExecutionException e) {
             if (e.getMostLikelyChains() == null || e.getMostLikelyChains().isEmpty()) return;
-            for (Map.Entry<ArgumentChain<?>, ChainExecutionException> entry : e.getMostLikelyChains().entrySet()) {
-                System.out.println(entry.getKey());
-                System.out.println(" -> " + entry.getValue());
+            for (ParseResult.FailedChain<?> failedChain : e.getMostLikelyChains()) {
+                System.out.println(failedChain.getArgumentChain());
+                System.out.println(" -> " + failedChain.getExecutionException());
             }
         }
     }

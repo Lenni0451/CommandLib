@@ -1,10 +1,10 @@
 import net.lenni0451.commandlib.ArgumentChain;
 import net.lenni0451.commandlib.CommandExecutor;
 import net.lenni0451.commandlib.Completion;
+import net.lenni0451.commandlib.ParseResult;
 import net.lenni0451.commandlib.builder.ArgumentBuilder;
 import net.lenni0451.commandlib.builder.LineBuilder;
 import net.lenni0451.commandlib.contexts.ExecutionContext;
-import net.lenni0451.commandlib.exceptions.ChainExecutionException;
 import net.lenni0451.commandlib.exceptions.CommandExecutionException;
 import net.lenni0451.commandlib.nodes.ArgumentNode;
 import net.lenni0451.commandlib.nodes.StringArrayNode;
@@ -217,17 +217,17 @@ public class UITest extends JFrame implements ArgumentBuilder<ExampleExecutor> {
                         "No likely chains found"
                 );
             } else {
-                for (Map.Entry<ArgumentChain<?>, ChainExecutionException> entry : e.getMostLikelyChains().entrySet()) {
+                for (ParseResult.FailedChain<?> failedChain : e.getMostLikelyChains()) {
                     this.addOutput(
                             "Likely chain",
-                            entry.getKey(),
+                            failedChain.getArgumentChain(),
                             "Chain exception:",
-                            " - Reason: " + entry.getValue().getReason(),
-                            " - Execution Index: " + entry.getValue().getExecutionIndex(),
-                            " - Reader Cursor: " + entry.getValue().getReaderCursor(),
-                            " - Argument Name: " + entry.getValue().getArgumentName(),
-                            " - Extra Data: " + entry.getValue().getExtraData(),
-                            " - Cause: " + entry.getValue().getCause(),
+                            " - Reason: " + failedChain.getExecutionException().getReason(),
+                            " - Execution Index: " + failedChain.getExecutionException().getExecutionIndex(),
+                            " - Reader Cursor: " + failedChain.getExecutionException().getReaderCursor(),
+                            " - Argument Name: " + failedChain.getExecutionException().getArgumentName(),
+                            " - Extra Data: " + failedChain.getExecutionException().getExtraData(),
+                            " - Cause: " + failedChain.getExecutionException().getCause(),
                             ""
                     );
                 }

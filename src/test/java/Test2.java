@@ -1,12 +1,11 @@
-import net.lenni0451.commandlib.ArgumentChain;
 import net.lenni0451.commandlib.CommandExecutor;
+import net.lenni0451.commandlib.ParseResult;
 import net.lenni0451.commandlib.builder.ArgumentBuilder;
 import net.lenni0451.commandlib.exceptions.ChainExecutionException;
 import net.lenni0451.commandlib.exceptions.CommandExecutionException;
 import net.lenni0451.commandlib.nodes.StringNode;
 import net.lenni0451.commandlib.utils.comparator.ArgumentComparator;
 
-import java.util.Map;
 import java.util.Scanner;
 
 import static net.lenni0451.commandlib.types.IntegerType.integer;
@@ -45,11 +44,11 @@ public class Test2 implements ArgumentBuilder<Runtime> {
             try {
                 executor.execute(Runtime.getRuntime(), line);
             } catch (CommandExecutionException e) {
-                for (Map.Entry<ArgumentChain<?>, ChainExecutionException> entry : e.getMostLikelyChains().entrySet()) {
-                    if (entry.getValue() == null) {
+                for (ParseResult.FailedChain<?> failedChain : e.getMostLikelyChains()) {
+                    if (failedChain.getExecutionException() == null) {
                         System.out.println(e.getMessage());
                     } else {
-                        ChainExecutionException chainExecutionException = entry.getValue();
+                        ChainExecutionException chainExecutionException = failedChain.getExecutionException();
                         if (chainExecutionException.getReason().equals(ChainExecutionException.Reason.NO_ARGUMENTS_LEFT)) {
                             System.out.println("No data left! Missing arguments: " + chainExecutionException.getExtraData());
                         } else if (chainExecutionException.getReason().equals(ChainExecutionException.Reason.TOO_MANY_ARGUMENTS)) {

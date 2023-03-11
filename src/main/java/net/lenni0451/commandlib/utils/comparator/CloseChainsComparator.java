@@ -1,42 +1,43 @@
 package net.lenni0451.commandlib.utils.comparator;
 
-import net.lenni0451.commandlib.ArgumentChain;
+import net.lenni0451.commandlib.ParseResult;
 import net.lenni0451.commandlib.exceptions.ArgumentParseException;
 import net.lenni0451.commandlib.exceptions.ChainExecutionException;
-import net.lenni0451.commandlib.utils.Util;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.Map;
+import java.util.List;
 
 /**
  * Compare failed argument chains by their reason.
  *
  * @param <E> The type of the executor
  */
-public class CloseChainsComparator<E> implements Comparator<Map.Entry<ArgumentChain<E>, ChainExecutionException>> {
+public class CloseChainsComparator<E> implements Comparator<ParseResult.FailedChain<E>> {
 
     /**
-     * Sort the given map by the fail reason.<br>
-     * The most likely wanted chain will be the first one in the map.
+     * Sort the given list of failed chains by their reason.<br>
+     * The most likely wanted chain will be the first one in the list.
      *
-     * @param in  The map to sort
+     * @param in  The list to sort
      * @param <E> The type of the executor
-     * @return The sorted map
+     * @return The sorted list
      */
-    public static <E> Map<ArgumentChain<E>, ChainExecutionException> getClosest(final Map<ArgumentChain<E>, ChainExecutionException> in) {
+    public static <E> List<ParseResult.FailedChain<E>> getClosest(final List<ParseResult.FailedChain<E>> in) {
         if (in.isEmpty()) return in;
-        Map<ArgumentChain<E>, ChainExecutionException> closest = Util.sortMap(in, new CloseChainsComparator<>());
+        List<ParseResult.FailedChain<E>> out = new ArrayList<>(in);
+        out.sort(new CloseChainsComparator<>());
 
         int lastWeight = -1;
-        Iterator<Map.Entry<ArgumentChain<E>, ChainExecutionException>> it = closest.entrySet().iterator();
+        Iterator<ParseResult.FailedChain<E>> it = out.iterator();
         while (it.hasNext()) {
-            Map.Entry<ArgumentChain<E>, ChainExecutionException> entry = it.next();
-            int weight = getReasonWeight(entry.getValue());
+            ParseResult.FailedChain<E> entry = it.next();
+            int weight = getReasonWeight(entry.getExecutionException());
             if (lastWeight == -1) lastWeight = weight;
             else if (lastWeight != weight) it.remove();
         }
-        return closest;
+        return out;
     }
 
     private static int getReasonWeight(final ChainExecutionException exception) {
@@ -63,9 +64,9 @@ public class CloseChainsComparator<E> implements Comparator<Map.Entry<ArgumentCh
 
 
     @Override
-    public int compare(Map.Entry<ArgumentChain<E>, ChainExecutionException> o1, Map.Entry<ArgumentChain<E>, ChainExecutionException> o2) {
-        int weight1 = getReasonWeight(o1.getValue());
-        int weight2 = getReasonWeight(o2.getValue());
+    public int compare(ParseResult.FailedChain<E> o1, ParseResult.FailedChain<E> o2) {
+        int weight1 = getReasonWeight(o1.getExecutionException());
+        int weight2 = getReasonWeight(o2.getExecutionException());
         return Integer.compare(weight2, weight1);
     }
 

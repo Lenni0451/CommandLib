@@ -1,9 +1,9 @@
 package net.lenni0451.commandlib.exceptions;
 
-import net.lenni0451.commandlib.ArgumentChain;
+import net.lenni0451.commandlib.ParseResult;
 
 import javax.annotation.Nullable;
-import java.util.Map;
+import java.util.List;
 
 /**
  * An exception which is thrown when an error occurs during the execution of a command.<br>
@@ -13,13 +13,13 @@ import java.util.Map;
 public class CommandExecutionException extends Exception {
 
     private final String command;
-    private final Map<ArgumentChain<?>, ChainExecutionException> mostLikelyChains;
+    private final List<ParseResult.FailedChain<?>> mostLikelyChains;
 
     public CommandExecutionException(final String command) {
         this(command, null);
     }
 
-    public CommandExecutionException(final String command, @Nullable final Map<ArgumentChain<?>, ChainExecutionException> mostLikelyChains) {
+    public CommandExecutionException(final String command, @Nullable final List<ParseResult.FailedChain<?>> mostLikelyChains) {
         super("An error occurred whilst executing command: " + command + "");
         this.command = command;
         this.mostLikelyChains = mostLikelyChains;
@@ -36,7 +36,7 @@ public class CommandExecutionException extends Exception {
      * @return A map of all chains which were tried to execute
      */
     @Nullable
-    public Map<ArgumentChain<?>, ChainExecutionException> getMostLikelyChains() {
+    public List<ParseResult.FailedChain<?>> getMostLikelyChains() {
         return this.mostLikelyChains;
     }
 
