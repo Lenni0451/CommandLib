@@ -158,7 +158,7 @@ public abstract class ArgumentNode<E, T> {
      * @param reader            The string reader
      * @return The completions
      */
-    public Set<String> completions(final CompletionContext completionContext, final ExecutionContext<E> executionContext, final StringReader reader) {
+    public Set<String> parseCompletions(final CompletionContext completionContext, final ExecutionContext<E> executionContext, final StringReader reader) {
         Set<String> completions = new HashSet<>();
         if (this.completionsProvider != null) this.completionsProvider.provide(completions, executionContext, reader);
         else this.parseCompletions(completions, completionContext, executionContext, reader);
@@ -226,7 +226,7 @@ public abstract class ArgumentNode<E, T> {
      * @param completionsProvider The completions provider
      * @return This argument node
      */
-    public ArgumentNode<E, T> suggestions(@Nullable final CompletionsProvider<E> completionsProvider) {
+    public ArgumentNode<E, T> completions(@Nullable final CompletionsProvider<E> completionsProvider) {
         this.completionsProvider = completionsProvider;
         return this;
     }

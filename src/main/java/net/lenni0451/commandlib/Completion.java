@@ -16,18 +16,18 @@ public class Completion {
     }
 
     /**
-     * The start of a suggestion is the index in the input where the suggestion starts.<br>
-     * To fill the suggestion into the input you could do something like this:
+     * The start of a completion is the index in the input where the completion starts.<br>
+     * To fill the completion into the input you could do something like this:
      * <br><br><code>
-     *     // The input the user types<br>
-     *     String input = "test inp";<br>
-     *     // Get the completion from somewhere<br>
-     *     Completion completion = new Completion(5, "input");<br>
-     *     input = input.substring(0, completion.getStart()) + completion.getCompletion();
+     * // The input the user types<br>
+     * String input = "test inp";<br>
+     * // Get the completion from somewhere<br>
+     * Completion completion = new Completion(5, "input");<br>
+     * input = input.substring(0, completion.getStart()) + completion.getCompletion();
      * </code><br><br>
      * In this example the input would be "test input" after the completion was applied.
      *
-     * @return The start of the suggestion
+     * @return The start of the completion
      */
     public int getStart() {
         return this.start;
@@ -42,7 +42,7 @@ public class Completion {
 
     @Override
     public String toString() {
-        return "Suggestion{" +
+        return "Completion{" +
                 "start=" + start +
                 ", completion='" + completion + '\'' +
                 '}';

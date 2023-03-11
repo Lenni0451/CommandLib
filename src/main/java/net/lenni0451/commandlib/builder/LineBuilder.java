@@ -95,7 +95,7 @@ public class LineBuilder<E> {
      * @return The line builder
      * @throws IllegalStateException If no argument was added before
      */
-    public LineBuilder<E> suggestions(@Nullable final CompletionsProvider<E> completionsProvider) {
+    public LineBuilder<E> completions(@Nullable final CompletionsProvider<E> completionsProvider) {
         if (this.nodes.isEmpty()) throw new IllegalStateException("No argument was added before");
         this.nodes.get(this.nodes.size() - 1).completionsProvider = completionsProvider;
         return this;
@@ -232,7 +232,7 @@ public class LineBuilder<E> {
             else node = this.node;
             node
                     .validator(this.validator)
-                    .suggestions(this.completionsProvider)
+                    .completions(this.completionsProvider)
                     .exceptionHandler(this.exceptionHandler);
             return node;
         }

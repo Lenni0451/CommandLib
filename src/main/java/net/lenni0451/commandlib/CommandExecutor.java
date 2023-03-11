@@ -95,7 +95,7 @@ public class CommandExecutor<E> {
                 ArgumentNode<E, ?> argument = chain.getArgument(matchedArguments.size() - 1);
                 reader.setCursor(match.getCursor());
                 String check = reader.peekRemaining();
-                Set<String> argumentCompletions = argument.completions(completionContext, executionContext, reader);
+                Set<String> argumentCompletions = argument.parseCompletions(completionContext, executionContext, reader);
                 for (String completion : argumentCompletions) {
                     int trim = completionContext.getCompletionsTrim();
                     if (this.argumentComparator.startsWith(completion, check.substring(trim))) completions.add(new Completion(match.getCursor() + trim, completion));
@@ -110,7 +110,7 @@ public class CommandExecutor<E> {
                 reader.setCursor(exception.getReaderCursor());
                 ArgumentNode<E, ?> argument = chain.getArgument(exception.getExecutionIndex());
                 String check = reader.peekRemaining();
-                Set<String> argumentCompletions = argument.completions(completionContext, executionContext, reader);
+                Set<String> argumentCompletions = argument.parseCompletions(completionContext, executionContext, reader);
                 for (String completion : argumentCompletions) {
                     int trim = completionContext.getCompletionsTrim();
                     if (this.argumentComparator.startsWith(completion, check.substring(trim))) completions.add(new Completion(exception.getReaderCursor() + trim, completion));
