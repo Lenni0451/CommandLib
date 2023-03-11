@@ -5,6 +5,7 @@ import net.lenni0451.commandlib.exceptions.ArgumentParseException;
 import net.lenni0451.commandlib.exceptions.ChainExecutionException;
 import net.lenni0451.commandlib.exceptions.HandledException;
 import net.lenni0451.commandlib.nodes.ArgumentNode;
+import net.lenni0451.commandlib.nodes.RedirectNode;
 import net.lenni0451.commandlib.utils.StringReader;
 
 import java.util.ArrayList;
@@ -39,7 +40,7 @@ public class ArgumentChain<E> {
                 ArgumentNode<E, ?> node = entry.getKey();
                 ArgumentChain<E> chain = entry.getValue();
 
-                if (node.executor() != null) {
+                if (node.executor() != null || node instanceof RedirectNode) {
                     List<String> names = new ArrayList<>();
                     for (ArgumentNode<E, ?> argumentNode : chain.arguments) {
                         if (!argumentNode.providesArgument()) continue;
@@ -60,6 +61,47 @@ public class ArgumentChain<E> {
         }
 
         return chains;
+    }
+
+    public static <E> ArgumentChain<E> merge(final ArgumentChain<E> chain1, final ArgumentChain<E> chain2) {
+        if (chain1.getExecutor() != null) throw new IllegalArgumentException("Can not merge chains if the first chain does not end with a redirect node");
+        if (chain2.getExecutor() == null) throw new IllegalArgumentException("Can not merge chains if the second chain does not have an executor");
+        return new ArgumentChain<E>() {
+            @Override
+            public int getLength() {
+                return chain1.getLength() + chain2.getLength();
+            }
+
+            @Override
+            public int[] getWeights() {
+                int[] weights = new int[getLength()];
+                System.arraycopy(chain1.getWeights(), 0, weights, 0, chain1.getLength());
+                System.arraycopy(chain2.getWeights(), 0, weights, chain1.getLength(), chain2.getLength());
+                return weights;
+            }
+
+            @Override
+            public ArgumentNode<E, ?> getArgument(int index) {
+                if (index < chain1.getLength()) return chain1.getArgument(index);
+                return chain2.getArgument(index - chain1.getLength());
+            }
+
+            @Override
+            public List<MatchedArgument> parse(ExecutionContext<E> executionContext, StringReader reader) {
+                throw new UnsupportedOperationException("Can not parse a merged chain");
+            }
+
+            @Override
+            public void populateArguments(ExecutionContext<E> executionContext, List<MatchedArgument> arguments) {
+                chain1.populateArguments(executionContext, arguments.subList(0, chain1.getLength()));
+                chain2.populateArguments(executionContext, arguments.subList(chain1.getLength(), arguments.size()));
+            }
+
+            @Override
+            public Function<ExecutionContext<E>, ?> getExecutor() {
+                return chain2.getExecutor();
+            }
+        };
     }
 
 
@@ -128,6 +170,10 @@ public class ArgumentChain<E> {
                 if (!argument.requirement().test(executionContext)) {
                     throw new ChainExecutionException(ChainExecutionException.Reason.REQUIREMENT_FAILED, i, cursor, argument.name(), reader.readRemaining());
                 }
+                if (argument instanceof RedirectNode<?>) {
+                    out.add(new MatchedArgument(cursor, "", argument.name()));
+                    return out;
+                }
                 Object parsedArgument = argument.value(executionContext, reader);
                 out.add(new MatchedArgument(cursor, reader.getString().substring(cursor, reader.getCursor()), parsedArgument));
                 if (!isLast && (!reader.canRead() || reader.read() != ' ')) {
@@ -180,8 +226,10 @@ public class ArgumentChain<E> {
     @Override
     public String toString() {
         StringBuilder out = new StringBuilder();
-        for (ArgumentNode<E, ?> argument : this.arguments) {
-            if (argument.providesArgument()) out.append('<').append(argument.name()).append('>');
+        for (int i = 0; i < this.getLength(); i++) {
+            ArgumentNode<E, ?> argument = this.getArgument(i);
+            if (argument instanceof RedirectNode) out.append("(").append(argument.name()).append(")").append("->");
+            else if (argument.providesArgument()) out.append('<').append(argument.name()).append('>');
             else out.append(argument.name());
             out.append(' ');
         }

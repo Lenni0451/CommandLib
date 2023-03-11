@@ -55,6 +55,14 @@ public class ChainExecutionException extends Exception {
         this.extraData = extraData;
     }
 
+    public ChainExecutionException(final ChainExecutionException exception, final int executionIndexOffset) {
+        this.reason = exception.reason;
+        this.executionIndex = exception.executionIndex + executionIndexOffset;
+        this.readerCursor = exception.readerCursor;
+        this.argumentName = exception.argumentName;
+        this.extraData = exception.extraData;
+    }
+
     /**
      * @return The reason why the execution failed
      */

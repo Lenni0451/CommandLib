@@ -5,6 +5,7 @@ import net.lenni0451.commandlib.contexts.ExecutionContext;
 import net.lenni0451.commandlib.exceptions.ChainExecutionException;
 import net.lenni0451.commandlib.exceptions.CommandExecutionException;
 import net.lenni0451.commandlib.nodes.ArgumentNode;
+import net.lenni0451.commandlib.nodes.RedirectNode;
 import net.lenni0451.commandlib.nodes.StringNode;
 import net.lenni0451.commandlib.utils.StringReader;
 import net.lenni0451.commandlib.utils.Util;
@@ -108,6 +109,7 @@ public class CommandExecutor<E> {
                 CompletionContext completionContext = new CompletionContext();
                 reader.setCursor(exception.getReaderCursor());
                 ArgumentNode<E, ?> argument = chain.getArgument(exception.getExecutionIndex());
+                while (argument instanceof RedirectNode) argument = ((RedirectNode<E>) argument).getTargetNode();
                 String check = reader.peekRemaining();
                 Set<String> argumentCompletions = argument.parseCompletions(completionContext, executionContext, reader);
                 for (String completion : argumentCompletions) {
@@ -166,23 +168,40 @@ public class CommandExecutor<E> {
     }
 
     private ParseResult<E> parseChains(final ExecutionContext<E> executionContext, final StringReader reader) {
+        List<ArgumentChain<E>> chains = new ArrayList<>();
+        for (List<ArgumentChain<E>> nodeChains : this.chains.values()) chains.addAll(nodeChains);
+        return this.parseChains(chains, executionContext, reader);
+    }
+
+    private ParseResult<E> parseChains(final List<ArgumentChain<E>> chains, final ExecutionContext<E> executionContext, final StringReader reader) {
         List<ParseResult.ParsedChain<E>> parsedChains = new ArrayList<>();
         List<ParseResult.FailedChain<E>> failedChains = new ArrayList<>();
         int cursor = reader.getCursor();
-        for (List<ArgumentChain<E>> chains : this.chains.values()) {
-            for (ArgumentChain<E> chain : chains) {
-                reader.setCursor(cursor);
-                try {
-                    List<ArgumentChain.MatchedArgument> matchedArguments = chain.parse(executionContext, reader);
-                    parsedChains.add(new ParseResult.ParsedChain<>(chain, matchedArguments));
-                } catch (ChainExecutionException e) {
-                    if (e.getExecutionIndex() == 0) {
-                        reader.setCursor(e.getReaderCursor());
-                        String word = reader.readWordOrString();
-                        if (!this.argumentComparator.startsWith(chain.getArgument(0).name(), word)) continue;
+        for (ArgumentChain<E> chain : chains) {
+            reader.setCursor(cursor);
+            try {
+                List<ArgumentChain.MatchedArgument> matchedArguments = chain.parse(executionContext, reader);
+                if (chain.getArgument(chain.getLength() - 1) instanceof RedirectNode) {
+                    RedirectNode<E> redirectNode = (RedirectNode<E>) chain.getArgument(chain.getLength() - 1);
+                    ParseResult<E> redirectResult = this.parseChains(redirectNode.getTargetChains(), executionContext, reader);
+                    for (ParseResult.ParsedChain<E> parsedChain : redirectResult.getParsedChains()) {
+                        matchedArguments.addAll(parsedChain.getMatchedArguments());
+                        parsedChains.add(new ParseResult.ParsedChain<>(ArgumentChain.merge(chain, parsedChain.getArgumentChain()), matchedArguments));
                     }
-                    failedChains.add(new ParseResult.FailedChain<>(chain, e));
+                    for (ParseResult.FailedChain<E> failedChain : redirectResult.getFailedChains()) {
+                        ChainExecutionException mergedException = new ChainExecutionException(failedChain.getExecutionException(), chain.getLength());
+                        failedChains.add(new ParseResult.FailedChain<>(ArgumentChain.merge(chain, failedChain.getArgumentChain()), mergedException));
+                    }
+                } else {
+                    parsedChains.add(new ParseResult.ParsedChain<>(chain, matchedArguments));
                 }
+            } catch (ChainExecutionException e) {
+                if (e.getExecutionIndex() == 0) {
+                    reader.setCursor(e.getReaderCursor());
+                    String word = reader.readWordOrString();
+                    if (!this.argumentComparator.startsWith(chain.getArgument(0).name(), word)) continue;
+                }
+                failedChains.add(new ParseResult.FailedChain<>(chain, e));
             }
         }
         reader.setCursor(cursor);

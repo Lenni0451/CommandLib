@@ -80,6 +80,10 @@ public class UITest extends JFrame implements ArgumentBuilder<ExampleExecutor> {
     }
 
     private void registerCommands() {
+        ArgumentNode<ExampleExecutor, ?> intList = this.list("list", IntegerType.integer(0, 100)).executes(c -> {
+            System.out.println("List: " + c.getArgument("list"));
+        });
+
         this.commandExecutor.register(
                 this.string("gamemode")
                         .then(this.string("survival").executes(() -> System.out.println("Gamemode set to survival")))
@@ -92,10 +96,7 @@ public class UITest extends JFrame implements ArgumentBuilder<ExampleExecutor> {
                         }))
         );
         this.commandExecutor.register(
-                this.string("list_test")
-                        .then(this.list("list", IntegerType.integer(0, 100)).executes(c -> {
-                            System.out.println("List: " + c.getArgument("list"));
-                        }))
+                this.string("list_test").then(intList)
         );
         this.commandExecutor.register(
                 this.string("string_test")
@@ -167,6 +168,10 @@ public class UITest extends JFrame implements ArgumentBuilder<ExampleExecutor> {
                                 .requires(e -> false)
                                 .executes(() -> System.out.println("How did you get here?"))
                         )
+        );
+        this.commandExecutor.register(
+                this.string("lt")
+                        .then(this.redirect("list_test", intList))
         );
 
         this.commandExecutor.register(

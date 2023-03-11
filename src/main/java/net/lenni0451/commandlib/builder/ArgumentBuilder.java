@@ -1,9 +1,6 @@
 package net.lenni0451.commandlib.builder;
 
-import net.lenni0451.commandlib.nodes.ListNode;
-import net.lenni0451.commandlib.nodes.StringArrayNode;
-import net.lenni0451.commandlib.nodes.StringNode;
-import net.lenni0451.commandlib.nodes.TypedNode;
+import net.lenni0451.commandlib.nodes.*;
 import net.lenni0451.commandlib.types.ArgumentType;
 import net.lenni0451.commandlib.types.DynamicType;
 import net.lenni0451.commandlib.types.DynamicType.BiParser;
@@ -68,6 +65,31 @@ public interface ArgumentBuilder<E> {
      */
     default <T> TypedNode<E, T> typed(final String name, @Nullable final String description, final ArgumentType<E, T> type) {
         return new TypedNode<>(name, description, type);
+    }
+
+    /**
+     * Create a redirect node.<br>
+     * The redirect node will redirect the execution to the given target node.
+     *
+     * @param name       The name of the argument
+     * @param targetNode The target node
+     * @return The created node
+     */
+    default RedirectNode<E> redirect(final String name, final ArgumentNode<E, ?> targetNode) {
+        return new RedirectNode<>(name, targetNode);
+    }
+
+    /**
+     * Create a redirect node.<br>
+     * The redirect node will redirect the execution to the given target node.
+     *
+     * @param name        The name of the argument
+     * @param description The description of the argument
+     * @param targetNode  The target node
+     * @return The created node
+     */
+    default RedirectNode<E> redirect(final String name, @Nullable final String description, final ArgumentNode<E, ?> targetNode) {
+        return new RedirectNode<>(name, description, targetNode);
     }
 
     /**
