@@ -225,12 +225,21 @@ public class ArgumentChain<E> {
 
     @Override
     public String toString() {
+        return this.toString(this.getExecutor() != null);
+    }
+
+    public String toString(final boolean skipRedirects) {
         StringBuilder out = new StringBuilder();
         for (int i = 0; i < this.getLength(); i++) {
             ArgumentNode<E, ?> argument = this.getArgument(i);
-            if (argument instanceof RedirectNode) out.append("(").append(argument.name()).append(")").append("->");
-            else if (argument.providesArgument()) out.append('<').append(argument.name()).append('>');
-            else out.append(argument.name());
+            if (argument instanceof RedirectNode) {
+                if (skipRedirects) continue;
+                else out.append("(").append(argument.name()).append(")").append("->");
+            } else if (argument.providesArgument()) {
+                out.append('<').append(argument.name()).append('>');
+            } else {
+                out.append(argument.name());
+            }
             out.append(' ');
         }
         return out.toString().trim();
