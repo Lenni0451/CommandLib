@@ -11,7 +11,7 @@ public class ChainPrintTest implements ArgumentBuilder<ExampleExecutor> {
 
     public ChainPrintTest() {
         StringNode<ExampleExecutor> target = (StringNode<ExampleExecutor>) this.string("target").executes(() -> {});
-        RedirectNode<ExampleExecutor> redirect = this.redirect("redirect", target);
+        RedirectNode<ExampleExecutor> redirect = this.redirect(target);
         StringNode<ExampleExecutor> root = (StringNode<ExampleExecutor>) this.string("test").then(redirect);
 
         ArgumentChain<ExampleExecutor> rootChain = ArgumentChain.buildChains(root).get(0);

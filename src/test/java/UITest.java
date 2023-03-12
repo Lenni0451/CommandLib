@@ -171,7 +171,7 @@ public class UITest extends JFrame implements ArgumentBuilder<ExampleExecutor> {
         );
         this.commandExecutor.register(
                 this.string("lt")
-                        .then(this.redirect("list_test", intList))
+                        .then(this.redirect(intList))
         );
 
         this.commandExecutor.register(
