@@ -76,6 +76,16 @@ public class RedirectNode<E> extends ArgumentNode<E, Void> {
     }
 
     @Override
+    public ArgumentNode<E, Void> then(List<ArgumentNode<E, ?>> children) {
+        throw new UnsupportedOperationException("Redirects can't have children");
+    }
+
+    @Override
+    public ArgumentNode<E, Void> then(ArgumentNode<E, ?> child) {
+        throw new UnsupportedOperationException("Redirects can't have children");
+    }
+
+    @Override
     public ArgumentNode<E, Void> validator(@Nullable Predicate<Void> validator) {
         throw new UnsupportedOperationException("Redirects can't be parsed");
     }
@@ -108,22 +118,22 @@ public class RedirectNode<E> extends ArgumentNode<E, Void> {
 
     @Override
     public ArgumentNode<E, Void> executes(Runnable runnable) {
-        throw new UnsupportedOperationException("Redirects can't be parsed");
+        throw new UnsupportedOperationException("Redirects can't be executed");
     }
 
     @Override
     public ArgumentNode<E, Void> executes(Consumer<ExecutionContext<E>> consumer) {
-        throw new UnsupportedOperationException("Redirects can't be parsed");
+        throw new UnsupportedOperationException("Redirects can't be executed");
     }
 
     @Override
     public ArgumentNode<E, Void> executes(Supplier<?> supplier) {
-        throw new UnsupportedOperationException("Redirects can't be parsed");
+        throw new UnsupportedOperationException("Redirects can't be executed");
     }
 
     @Override
     public ArgumentNode<E, Void> executes(Function<ExecutionContext<E>, ?> function) {
-        throw new UnsupportedOperationException("Redirects can't be parsed");
+        throw new UnsupportedOperationException("Redirects can't be executed");
     }
 
 }
