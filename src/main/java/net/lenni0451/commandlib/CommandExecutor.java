@@ -45,7 +45,7 @@ public class CommandExecutor<E> {
      * @param argumentNode The argument node
      */
     public void register(final ArgumentNode<E, ?> argumentNode) {
-        if (!(argumentNode instanceof StringNode)) throw new IllegalArgumentException("Register argument node must be a StringArgumentNode");
+        if (!(argumentNode instanceof StringNode)) throw new IllegalArgumentException("Register argument node must be a StringNode");
         this.register((StringNode<E>) argumentNode);
     }
 
