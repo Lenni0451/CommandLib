@@ -71,25 +71,11 @@ public interface ArgumentBuilder<E> {
      * Create a redirect node.<br>
      * The redirect node will redirect the execution to the given target node.
      *
-     * @param name       The name of the argument
      * @param targetNode The target node
      * @return The created node
      */
-    default RedirectNode<E> redirect(final String name, final ArgumentNode<E, ?> targetNode) {
-        return new RedirectNode<>(name, targetNode);
-    }
-
-    /**
-     * Create a redirect node.<br>
-     * The redirect node will redirect the execution to the given target node.
-     *
-     * @param name        The name of the argument
-     * @param description The description of the argument
-     * @param targetNode  The target node
-     * @return The created node
-     */
-    default RedirectNode<E> redirect(final String name, @Nullable final String description, final ArgumentNode<E, ?> targetNode) {
-        return new RedirectNode<>(name, description, targetNode);
+    default RedirectNode<E> redirect(final ArgumentNode<E, ?> targetNode) {
+        return new RedirectNode<>(targetNode);
     }
 
     /**

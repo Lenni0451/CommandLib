@@ -28,13 +28,8 @@ public class RedirectNode<E> extends ArgumentNode<E, Void> {
     private final ArgumentNode<E, ?> targetNode;
     private List<ArgumentChain<E>> targetChains;
 
-    public RedirectNode(final String name, final ArgumentNode<E, ?> targetNode) {
-        super(name);
-        this.targetNode = targetNode;
-    }
-
-    public RedirectNode(final String name, @Nullable final String description, final ArgumentNode<E, ?> targetNode) {
-        super(name, description);
+    public RedirectNode(final ArgumentNode<E, ?> targetNode) {
+        super("redirect");
         this.targetNode = targetNode;
     }
 
