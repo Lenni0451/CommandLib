@@ -199,6 +199,17 @@ public abstract class ArgumentNode<E, T> {
     }
 
     /**
+     * Add multiple children to this argument node.
+     *
+     * @param children The children
+     * @return This argument node
+     */
+    public ArgumentNode<E, T> then(final List<ArgumentNode<E, ?>> children) {
+        this.children.addAll(children);
+        return this;
+    }
+
+    /**
      * Set the requirement of this argument node.
      *
      * @param requirement The requirement
