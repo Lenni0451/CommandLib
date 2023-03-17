@@ -229,14 +229,14 @@ public class CommandExecutor<E> {
     }
 
     private int compareChains(final ArgumentChain<E> chain1, final ArgumentChain<E> chain2) {
-        if (chain1.getLength() > chain2.getLength()) return 1;
-        if (chain1.getLength() < chain2.getLength()) return -1;
+        if (chain1.getLength() > chain2.getLength()) return -1;
+        if (chain1.getLength() < chain2.getLength()) return 1;
 
         int[] weights1 = chain1.getWeights();
         int[] weights2 = chain2.getWeights();
         for (int i = 0; i < weights1.length; i++) {
-            if (weights1[i] > weights2[i]) return 1;
-            if (weights1[i] < weights2[i]) return -1;
+            if (weights1[i] > weights2[i]) return -1;
+            if (weights1[i] < weights2[i]) return 1;
         }
         return 0;
     }
