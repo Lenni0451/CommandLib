@@ -161,8 +161,9 @@ public class CommandExecutor<E> {
         } catch (CommandExecutionException e) {
             if (parseResult.getFailedChains().isEmpty()) throw e;
 
-            List<ParseResult.FailedChain<E>> closeChains = CloseChainsComparator.getClosest(parseResult.getFailedChains());
-            closeChains.sort((f1, f2) -> this.compareChains(f1.getArgumentChain(), f2.getArgumentChain()));
+            List<ParseResult.FailedChain<E>> closeChains = CloseChainsComparator.getClosest(parseResult.getFailedChains()); //Sort by exception weight
+            closeChains.sort((f1, f2) -> this.compareChains(f1.getArgumentChain(), f2.getArgumentChain())); //Sort by length and weight
+            closeChains.sort((o1, o2) -> Integer.compare(o2.getExecutionException().getExecutionIndex(), o1.getExecutionException().getExecutionIndex())); //Sort by execution progress
             throw new CommandExecutionException(e.getCommand(), Util.cast(closeChains));
         }
     }
