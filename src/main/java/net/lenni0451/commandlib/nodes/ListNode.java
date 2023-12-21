@@ -14,7 +14,8 @@ import java.util.Set;
 
 /**
  * The list node can be used to parse the same argument multiple times.<br>
- * This has to be the last node in the tree as it will consume all remaining input.
+ * This has to be the last node in the tree as it will consume all remaining input.<br>
+ * The parsed arguments have to be separated by a space.
  *
  * @param <E> The type of the executor
  * @param <T> The type of the argument

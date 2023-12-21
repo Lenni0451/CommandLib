@@ -242,6 +242,27 @@ public class StringReader {
     }
 
     /**
+     * Read until a character in the given array is found or the end of the string is reached.<br>
+     * The character will not be read.<br>
+     * If the given character is escaped using a backslash, it will be ignored. The backslash will be removed.
+     *
+     * @param allowEscape Whether to allow escaping
+     * @param cs          The array of characters
+     * @return The read characters
+     */
+    public String readUntil(final boolean allowEscape, final char... cs) {
+        int start = this.cursor;
+        while (this.canRead()) {
+            if (Util.contains(this.peek(), cs)) break;
+            if (allowEscape && this.peek() == '\\') this.cursor++;
+            this.cursor++;
+        }
+        String s = this.string.substring(start, this.cursor);
+        if (allowEscape) s = STRING_ESCAPE_REPLACEMENT.matcher(s).replaceAll("$1");
+        return s;
+    }
+
+    /**
      * @return The remaining string and move the cursor to the end of the string
      */
     public String readRemaining() {

@@ -173,6 +173,12 @@ public class UITest extends JFrame implements ArgumentBuilder<ExampleExecutor> {
                 this.string("lt")
                         .then(this.redirect(intList))
         );
+        this.commandExecutor.register(
+                this.string("at")
+                        .then(this.array("arr", IntegerType.integer()).executes(c -> {
+                            System.out.println("Array: " + Arrays.toString(c.<Integer[]>getArgument("arr")));
+                        }))
+        );
 
         this.commandExecutor.register(
                 this.string("print").executes(() -> {

@@ -112,4 +112,18 @@ public class Util {
         };
     }
 
+    /**
+     * Check if a char array contains a char.
+     *
+     * @param c  The char to check
+     * @param cs The char array to check
+     * @return If the char array contains the char
+     */
+    public static boolean contains(final char c, final char[] cs) {
+        for (char c1 : cs) {
+            if (c1 == c) return true;
+        }
+        return false;
+    }
+
 }

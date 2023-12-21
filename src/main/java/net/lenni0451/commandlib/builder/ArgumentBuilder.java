@@ -81,7 +81,7 @@ public interface ArgumentBuilder<E> {
     /**
      * Create a new list argument node.<br>
      * The argument will be parsed by the given {@link ArgumentType}.<br>
-     * The argument can be repeated multiple times.
+     * The argument can be repeated multiple times. It is separated by a space.
      *
      * @param name The name of the argument
      * @param type The argument type
@@ -95,7 +95,7 @@ public interface ArgumentBuilder<E> {
     /**
      * Create a new list argument node.<br>
      * The argument will be parsed by the given {@link ArgumentType}.<br>
-     * The argument can be repeated multiple times.
+     * The argument can be repeated multiple times. It is separated by a space.
      *
      * @param name        The name of the argument
      * @param description The description of the argument
@@ -105,6 +105,35 @@ public interface ArgumentBuilder<E> {
      */
     default <T> ListNode<E, T> list(final String name, @Nullable final String description, final ArgumentType<E, T> type) {
         return new ListNode<>(name, description, type);
+    }
+
+    /**
+     * Create a new array argument node.<br>
+     * The argument will be parsed by the given {@link ArgumentType}.<br>
+     * The argument can be repeated multiple times. It is separated by a comma.
+     *
+     * @param name The name of the argument
+     * @param type The argument type
+     * @param <T>  The type of the argument
+     * @return The created node
+     */
+    default <T> ArrayNode<E, T> array(final String name, final ArgumentType<E, T> type) {
+        return new ArrayNode<>(name, type);
+    }
+
+    /**
+     * Create a new array argument node.<br>
+     * The argument will be parsed by the given {@link ArgumentType}.<br>
+     * The argument can be repeated multiple times. It is separated by a comma.
+     *
+     * @param name        The name of the argument
+     * @param description The description of the argument
+     * @param type        The argument type
+     * @param <T>         The type of the argument
+     * @return The created node
+     */
+    default <T> ArrayNode<E, T> array(final String name, @Nullable final String description, final ArgumentType<E, T> type) {
+        return new ArrayNode<>(name, description, type);
     }
 
     /**
