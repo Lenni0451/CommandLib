@@ -19,7 +19,7 @@ import java.util.Set;
  * @param <E> The type of the executor
  * @param <T> The type of the argument
  */
-public class ArrayNode<E, T> extends ArgumentNode<E, T[]> {
+public class ArrayNode<E, T> extends ArgumentNode<E, List<T>> {
 
     private final ArgumentType<E, T> type;
 
@@ -37,7 +37,7 @@ public class ArrayNode<E, T> extends ArgumentNode<E, T[]> {
 
     @Nonnull
     @Override
-    protected T[] parseValue(ExecutionContext<E> executionContext, StringReader stringReader) throws ArgumentParseException, RuntimeException {
+    protected List<T> parseValue(ExecutionContext<E> executionContext, StringReader stringReader) throws ArgumentParseException, RuntimeException {
         List<T> result = new ArrayList<>();
         while (stringReader.canRead()) {
             String part;
@@ -53,7 +53,7 @@ public class ArrayNode<E, T> extends ArgumentNode<E, T[]> {
                 else throw ArgumentParseException.namedReason(this.name(), "Expected comma or space");
             }
         }
-        return result.toArray((T[]) new Object[0]);
+        return result;
     }
 
     @Override
