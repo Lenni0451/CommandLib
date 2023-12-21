@@ -86,7 +86,7 @@ public class ArrayNode<E, T> extends ArgumentNode<E, List<T>> {
                         throw ArgumentParseException.namedReason(this.name(), "Expected comma or space");
                     }
                 }
-            } catch (ArgumentParseException e) {
+            } catch (Throwable t) {
                 break;
             }
         }
