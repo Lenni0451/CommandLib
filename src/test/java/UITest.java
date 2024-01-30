@@ -9,6 +9,7 @@ import net.lenni0451.commandlib.exceptions.CommandExecutionException;
 import net.lenni0451.commandlib.nodes.ArgumentNode;
 import net.lenni0451.commandlib.nodes.StringArrayNode;
 import net.lenni0451.commandlib.nodes.StringNode;
+import net.lenni0451.commandlib.types.FloatType;
 import net.lenni0451.commandlib.types.IntegerType;
 import net.lenni0451.commandlib.types.StringType;
 
@@ -177,6 +178,12 @@ public class UITest extends JFrame implements ArgumentBuilder<ExampleExecutor> {
                 this.string("at")
                         .then(this.array("arr", IntegerType.integer()).executes(c -> {
                             System.out.println("Array: " + c.<List<Integer>>getArgument("arr"));
+                        }))
+        );
+        this.commandExecutor.register(
+                this.string("float")
+                        .then(this.typed("float", FloatType.rangeFloat(10, 50)).executes(c -> {
+                            System.out.println("Float: " + c.getArgument("float"));
                         }))
         );
 
