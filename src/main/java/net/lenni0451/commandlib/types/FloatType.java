@@ -25,7 +25,7 @@ public class FloatType<E> implements ArgumentType<E, Float> {
      * @param <E> The type of the executor
      * @return The new float type
      */
-    public static <E> FloatType<E> floatt() {
+    public static <E> FloatType<E> create() {
         return new FloatType<>(null, null);
     }
 
