@@ -53,7 +53,7 @@ public class ListNode<E, T> extends ArgumentNode<E, List<T>> {
     @Override
     protected void parseCompletions(Set<String> completions, CompletionContext completionContext, ExecutionContext<E> executionContext, StringReader stringReader) {
         if (!stringReader.canRead()) {
-            this.type.parseCompletions(completions, executionContext, stringReader);
+            this.type.parseCompletions(completions, completionContext, executionContext, stringReader);
             return;
         }
 
@@ -72,7 +72,7 @@ public class ListNode<E, T> extends ArgumentNode<E, List<T>> {
         }
         if (!endsWithSpace) prefix = stringReader.getString().substring(start, lastCursor);
         stringReader.setCursor(lastCursor);
-        this.type.parseCompletions(completions, executionContext, new StringReader(prefix));
+        this.type.parseCompletions(completions, completionContext, executionContext, new StringReader(prefix));
         completionContext.setCompletionsTrim(prefix.length());
     }
 

@@ -59,7 +59,7 @@ public class ArrayNode<E, T> extends ArgumentNode<E, List<T>> {
     @Override
     protected void parseCompletions(Set<String> completions, CompletionContext completionContext, ExecutionContext<E> executionContext, StringReader stringReader) {
         if (!stringReader.canRead()) {
-            this.type.parseCompletions(completions, executionContext, stringReader);
+            this.type.parseCompletions(completions, completionContext, executionContext, stringReader);
             return;
         }
 
@@ -90,7 +90,7 @@ public class ArrayNode<E, T> extends ArgumentNode<E, List<T>> {
                 break;
             }
         }
-        this.type.parseCompletions(completions, executionContext, new StringReader(prefix.substring(lastCursor - start)));
+        this.type.parseCompletions(completions, completionContext, executionContext, new StringReader(prefix.substring(lastCursor - start)));
         stringReader.setCursor(lastCursor);
         completionContext.setCompletionsTrim(lastCursor - start);
     }

@@ -1,5 +1,6 @@
 package net.lenni0451.commandlib.types;
 
+import net.lenni0451.commandlib.contexts.CompletionContext;
 import net.lenni0451.commandlib.contexts.ExecutionContext;
 import net.lenni0451.commandlib.exceptions.ArgumentParseException;
 import net.lenni0451.commandlib.utils.StringReader;
@@ -97,7 +98,7 @@ public class FloatType<E> implements ArgumentType<E, Float> {
     }
 
     @Override
-    public void parseCompletions(Set<String> completions, ExecutionContext<E> executionContext, StringReader stringReader) {
+    public void parseCompletions(Set<String> completions, CompletionContext completionContext, ExecutionContext<E> executionContext, StringReader stringReader) {
         if (this.min != null && this.max != null) {
             float diff = this.max - this.min;
             float step = Math.max(1, diff / 10);

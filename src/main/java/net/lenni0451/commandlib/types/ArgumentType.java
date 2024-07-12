@@ -1,5 +1,6 @@
 package net.lenni0451.commandlib.types;
 
+import net.lenni0451.commandlib.contexts.CompletionContext;
 import net.lenni0451.commandlib.contexts.ExecutionContext;
 import net.lenni0451.commandlib.exceptions.ArgumentParseException;
 import net.lenni0451.commandlib.utils.StringReader;
@@ -36,13 +37,26 @@ public interface ArgumentType<E, T> {
     T parseValue(final ExecutionContext<E> executionContext, final StringReader stringReader) throws ArgumentParseException, RuntimeException;
 
     /**
-     * Provide the completions of this argument.
+     * <b>Deprecated!</b> Use {@link #parseCompletions(Set, CompletionContext, ExecutionContext, StringReader)}.
      *
      * @param completions      The set of completions
      * @param executionContext The execution context
      * @param stringReader     The string reader
      */
+    @Deprecated
     default void parseCompletions(final Set<String> completions, final ExecutionContext<E> executionContext, final StringReader stringReader) {
+    }
+
+    /**
+     * Provide the completions of this argument.
+     *
+     * @param completions       The set of completions
+     * @param completionContext The completion context
+     * @param executionContext  The execution context
+     * @param stringReader      The string reader
+     */
+    default void parseCompletions(final Set<String> completions, final CompletionContext completionContext, final ExecutionContext<E> executionContext, final StringReader stringReader) {
+        this.parseCompletions(completions, executionContext, stringReader);
     }
 
 }

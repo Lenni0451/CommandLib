@@ -40,7 +40,7 @@ public class TypedNode<E, T> extends ArgumentNode<E, T> {
 
     @Override
     protected void parseCompletions(Set<String> completions, CompletionContext completionContext, ExecutionContext<E> executionContext, StringReader stringReader) {
-        this.type.parseCompletions(completions, executionContext, stringReader);
+        this.type.parseCompletions(completions, completionContext, executionContext, stringReader);
     }
 
 }
