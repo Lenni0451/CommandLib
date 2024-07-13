@@ -266,6 +266,9 @@ public abstract class ArgumentNode<E, T> {
     /**
      * Set the completion matcher of this argument node.<br>
      * This replaces the completion modifier.
+     *
+     * @param completionMatcher The completion matcher
+     * @return This argument node
      */
     public ArgumentNode<E, T> completionMatcher(@Nonnull final CompletionContext.CompletionMatcher completionMatcher) {
         return this.completionModifier(completionContext -> completionContext.setCompletionMatcher(completionMatcher));
