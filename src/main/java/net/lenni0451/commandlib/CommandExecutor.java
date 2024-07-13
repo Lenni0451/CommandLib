@@ -98,7 +98,9 @@ public class CommandExecutor<E> {
                 Set<String> argumentCompletions = argument.parseCompletions(completionContext, executionContext, reader);
                 for (String completion : argumentCompletions) {
                     int trim = completionContext.getCompletionsTrim();
-                    if (this.argumentComparator.startsWith(completion, check.substring(trim))) completions.add(new Completion(match.getCursor() + trim, completion));
+                    if (completionContext.getCompletionMatcher().match(this.argumentComparator, completion, check.substring(trim))) {
+                        completions.add(new Completion(match.getCursor() + trim, completion));
+                    }
                 }
             }
             for (ParseResult.FailedChain<E> failedChain : parseResult.getFailedChains()) {
@@ -114,7 +116,9 @@ public class CommandExecutor<E> {
                 Set<String> argumentCompletions = argument.parseCompletions(completionContext, executionContext, reader);
                 for (String completion : argumentCompletions) {
                     int trim = completionContext.getCompletionsTrim();
-                    if (this.argumentComparator.startsWith(completion, check.substring(trim))) completions.add(new Completion(exception.getReaderCursor() + trim, completion));
+                    if (completionContext.getCompletionMatcher().match(this.argumentComparator, completion, check.substring(trim))) {
+                        completions.add(new Completion(exception.getReaderCursor() + trim, completion));
+                    }
                 }
             }
         }

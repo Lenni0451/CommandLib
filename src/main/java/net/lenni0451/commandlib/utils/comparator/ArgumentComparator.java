@@ -10,13 +10,18 @@ public abstract class ArgumentComparator {
      */
     public static final ArgumentComparator CASE_SENSITIVE = new ArgumentComparator() {
         @Override
-        public boolean compare(String a, String b) {
-            return a.equals(b);
+        public boolean startsWith(String s, String b) {
+            return s.startsWith(b);
         }
 
         @Override
-        public boolean startsWith(String s, String b) {
-            return s.startsWith(b);
+        public boolean contains(String s, String b) {
+            return s.contains(b);
+        }
+
+        @Override
+        public boolean compare(String a, String b) {
+            return a.equals(b);
         }
 
         @Override
@@ -29,13 +34,18 @@ public abstract class ArgumentComparator {
      */
     public static final ArgumentComparator CASE_INSENSITIVE = new ArgumentComparator() {
         @Override
-        public boolean compare(String a, String b) {
-            return a.equalsIgnoreCase(b);
+        public boolean startsWith(String s, String b) {
+            return s.toLowerCase().startsWith(b.toLowerCase());
         }
 
         @Override
-        public boolean startsWith(String s, String b) {
-            return s.toLowerCase().startsWith(b.toLowerCase());
+        public boolean contains(String s, String b) {
+            return s.toLowerCase().contains(b.toLowerCase());
+        }
+
+        @Override
+        public boolean compare(String a, String b) {
+            return a.equalsIgnoreCase(b);
         }
 
         @Override
@@ -46,15 +56,6 @@ public abstract class ArgumentComparator {
 
 
     /**
-     * Compare if two strings are equal.
-     *
-     * @param a The first string
-     * @param b The second string
-     * @return If the strings are equal
-     */
-    public abstract boolean compare(final String a, final String b);
-
-    /**
      * Check if string a starts with string b.
      *
      * @param s The string to check
@@ -62,6 +63,24 @@ public abstract class ArgumentComparator {
      * @return If string a starts with string b
      */
     public abstract boolean startsWith(final String s, final String b);
+
+    /**
+     * Check if string a contains string b.
+     *
+     * @param s The string to check
+     * @param b The string to check for
+     * @return If string a contains string b
+     */
+    public abstract boolean contains(final String s, final String b);
+
+    /**
+     * Compare if two strings are equal.
+     *
+     * @param a The first string
+     * @param b The second string
+     * @return If the strings are equal
+     */
+    public abstract boolean compare(final String a, final String b);
 
     /**
      * Compare two strings.
