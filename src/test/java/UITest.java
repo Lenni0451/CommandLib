@@ -4,6 +4,7 @@ import net.lenni0451.commandlib.Completion;
 import net.lenni0451.commandlib.ParseResult;
 import net.lenni0451.commandlib.builder.ArgumentBuilder;
 import net.lenni0451.commandlib.builder.LineBuilder;
+import net.lenni0451.commandlib.contexts.CompletionContext;
 import net.lenni0451.commandlib.contexts.ExecutionContext;
 import net.lenni0451.commandlib.exceptions.CommandExecutionException;
 import net.lenni0451.commandlib.nodes.ArgumentNode;
@@ -87,8 +88,8 @@ public class UITest extends JFrame implements ArgumentBuilder<ExampleExecutor> {
 
         this.commandExecutor.register(
                 this.string("gamemode")
-                        .then(this.string("survival").executes(() -> System.out.println("Gamemode set to survival")))
-                        .then(this.string("creative").executes(() -> System.out.println("Gamemode set to creative")))
+                        .then(this.string("survival").completionMatcher(CompletionContext.CompletionMatcher.CONTAINS).executes(() -> System.out.println("Gamemode set to survival")))
+                        .then(this.string("creative").completionMatcher(CompletionContext.CompletionMatcher.CONTAINS).executes(() -> System.out.println("Gamemode set to creative")))
         );
         this.commandExecutor.register(
                 this.string("gm")

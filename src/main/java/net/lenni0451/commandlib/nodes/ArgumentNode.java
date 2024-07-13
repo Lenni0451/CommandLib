@@ -36,6 +36,7 @@ public abstract class ArgumentNode<E, T> {
     private ArgumentRequirement<E> requirement = e -> true;
     private Predicate<T> validator;
     private CompletionsProvider<E> completionsProvider;
+    private Consumer<CompletionContext> completionModifier;
     private CommandExceptionHandler<E> exceptionHandler;
     private Function<ExecutionContext<E>, ?> executor;
 
@@ -110,6 +111,14 @@ public abstract class ArgumentNode<E, T> {
     }
 
     /**
+     * @return The completion modifier of this argument
+     */
+    @Nullable
+    public Consumer<CompletionContext> completionModifier() {
+        return this.completionModifier;
+    }
+
+    /**
      * @return The exception handler of this argument
      */
     @Nullable
@@ -162,6 +171,7 @@ public abstract class ArgumentNode<E, T> {
         Set<String> completions = new HashSet<>();
         if (this.completionsProvider != null) this.completionsProvider.provide(completions, executionContext, reader);
         else this.parseCompletions(completions, completionContext, executionContext, reader);
+        if (this.completionModifier != null) this.completionModifier.accept(completionContext);
         return completions;
     }
 
@@ -240,6 +250,25 @@ public abstract class ArgumentNode<E, T> {
     public ArgumentNode<E, T> completions(@Nullable final CompletionsProvider<E> completionsProvider) {
         this.completionsProvider = completionsProvider;
         return this;
+    }
+
+    /**
+     * Set the completion modifier of this argument node.
+     *
+     * @param completionModifier The completion modifier
+     * @return This argument node
+     */
+    public ArgumentNode<E, T> completionModifier(@Nullable final Consumer<CompletionContext> completionModifier) {
+        this.completionModifier = completionModifier;
+        return this;
+    }
+
+    /**
+     * Set the completion matcher of this argument node.<br>
+     * This replaces the completion modifier.
+     */
+    public ArgumentNode<E, T> completionMatcher(@Nonnull final CompletionContext.CompletionMatcher completionMatcher) {
+        return this.completionModifier(completionContext -> completionContext.setCompletionMatcher(completionMatcher));
     }
 
     /**
