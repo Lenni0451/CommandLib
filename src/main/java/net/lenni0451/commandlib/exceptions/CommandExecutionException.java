@@ -20,7 +20,7 @@ public class CommandExecutionException extends Exception {
     }
 
     public CommandExecutionException(final String command, @Nullable final List<ParseResult.FailedChain<?>> mostLikelyChains) {
-        super("An error occurred whilst executing command: " + command + "");
+        super("An error occurred whilst executing command: " + command);
         this.command = command;
         this.mostLikelyChains = mostLikelyChains;
     }
